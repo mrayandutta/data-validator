@@ -1,5 +1,6 @@
 package org.datavalidator.util;
 
+import org.datavalidator.model.CellItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,7 @@ public class DataCompareUtil {
 
     }
 
-    public static void compareRowMap(Map<String, String> sourceMap,Map<String, String> targetMap)
+    public static void compareRowMap(Map<String, CellItem> sourceMap, Map<String, CellItem> targetMap)
     {
         //List output =
         sourceMap.entrySet().stream()
@@ -24,18 +25,19 @@ public class DataCompareUtil {
                 {
                     boolean valueMismatch = true;
                     String sourceKey = item.getKey();
-                    String sourceValue = item.getValue();
+                    //String sourceValue = item.getValue();
+                    CellItem sourceCellItem = item.getValue();
                     if(targetMap.containsKey(sourceKey))
                     {
-                        String targetValue = targetMap.get(sourceKey);
-                        if(sourceValue.equalsIgnoreCase(targetValue))
+                        CellItem targetCellItem = targetMap.get(sourceKey);
+                        if(sourceCellItem.getData().equalsIgnoreCase(targetCellItem.getData()))
                         {
                             valueMismatch=false;
                         }
                     }
                     return valueMismatch;
                 })
-                .forEach(item->logger.info("Mismatch for key:{},value:{}",item.getKey(),item.getValue()));
+                .forEach(item->logger.info("Mismatch for key:{},value:{}",item.getKey(),item.getValue().getData()));
                 //.collect(Collectors.toList());
                 //logger.info("output:{}",output);
 

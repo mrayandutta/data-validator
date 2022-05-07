@@ -1,3 +1,4 @@
+import org.datavalidator.model.CellItem;
 import org.datavalidator.util.DataCompareUtil;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -18,16 +19,16 @@ public class DataCompareUtilTest {
     @Test
     public void testCompareRowMap()
     {
-        Map<String, String> sourceMap = new LinkedHashMap<>();
-        Map<String, String> targetMap = new LinkedHashMap<>();
+        Map<String, CellItem> sourceMap = new LinkedHashMap<>();
+        Map<String, CellItem> targetMap = new LinkedHashMap<>();
 
-        sourceMap.put("C1","A");
-        sourceMap.put("C2","B");
-        sourceMap.put("C3","C");
+        sourceMap.put("C1",new CellItem("A",1,null));
+        sourceMap.put("C2",new CellItem("B",2,null));
+        sourceMap.put("C3",new CellItem("C",3,null));
 
-        targetMap.put("C1","A");
-        targetMap.put("C2","B1");
-        targetMap.put("C3","C1");
+        targetMap.put("C1",new CellItem("A",1,null));
+        targetMap.put("C2",new CellItem("B1",2,null));
+        targetMap.put("C3",new CellItem("C1",3,null));
 
         DataCompareUtil.compareRowMap(sourceMap,targetMap);
 

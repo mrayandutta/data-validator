@@ -3,6 +3,7 @@ package org.datavalidator.util;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.datavalidator.model.CellItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,20 +17,35 @@ import java.util.*;
 public class ExcelUtil {
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    public static Map<Integer,Map> readExcelSheetByName(String filePath,int sheetNumber,int startRowNumber)
+    public static Workbook getWorkbookFromExcel(String filePath)
+    {
+        Workbook workbook  = null;
+        try {
+            workbook = WorkbookFactory.create(new File(filePath));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return workbook;
+    }
+
+    public static Sheet getSheetFromWorkbook(Workbook workbook,int sheetNumber)
+    {
+       return workbook.getSheetAt(sheetNumber);
+    }
+
+    public static Map<Integer,Map> populateDataFromSheet(Sheet sheet)
     {   Map<Integer,Map> rowMap = new LinkedHashMap<>();
-        FileInputStream excelFileIS = null;
         try
         {
-            Workbook workbook = WorkbookFactory.create(new File(filePath));
-            Sheet sheet = workbook.getSheetAt(sheetNumber);
             int numberOfRows = sheet.getPhysicalNumberOfRows();
             Map<String,String> headerMap = new LinkedHashMap<>();
             // Create a DataFormatter to format and get each cell's value as String
             DataFormatter dataFormatter = new DataFormatter();
             for (int i = 0; i < numberOfRows; i++)
             {
-                Map<String,String> dataMap = new LinkedHashMap<>();
+                Map<String,CellItem> dataMap = new LinkedHashMap<>();
                 Row row = sheet.getRow(i);
                 int numberOfColumns = row.getPhysicalNumberOfCells();
                 for (int j = 0; j < numberOfColumns; j++)
@@ -42,12 +58,15 @@ public class ExcelUtil {
                         if(i==0)
                         {
                             headerMap.put(String.valueOf(j),cellValue);
-                            highLightCell(cell,workbook);
+                            //highLightCell(cell,workbook);
                         }
                         else
                         {
                             String columnName= headerMap.get(String.valueOf(j));
-                            dataMap.put(columnName,cellValue);
+                            CellItem cellItem = new CellItem(cellValue,i,cell);
+                            //dataMap.put(columnName,cellValue);
+                            dataMap.put(columnName,cellItem);
+
                         }
                         //logger.info("j:{},headerMap:{},dataMap:{}",j,headerMap,dataMap);
                     }
@@ -63,11 +82,11 @@ public class ExcelUtil {
 
             }
             // Write the output to a file
-            FileOutputStream fileOut = new FileOutputStream("./color_test_new.xlsx");
-            workbook.write(fileOut);
-            fileOut.close();
+            //FileOutputStream fileOut = new FileOutputStream("./color_test_new.xlsx");
+            //workbook.write(fileOut);
+            //fileOut.close();
 
-            workbook.close();
+            //workbook.close();
         }
         catch (Exception e)
         {
@@ -75,17 +94,7 @@ public class ExcelUtil {
         }
         finally
         {
-            if(excelFileIS!=null)
-            {
-                try
-                {
-                    excelFileIS.close();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
+           //
         }
         //logger.info("Read data from sheet '"+sheetName+"'");
         logger.info("rowMap:{}",rowMap);
@@ -116,7 +125,9 @@ public class ExcelUtil {
         String sheetName="Employee";
         int startRowNumber = 0;
         String filePath1 = "./sample.xlsx";
-        Map<Integer, Map> dataset1 = readExcelSheetByName(filePath1,0,startRowNumber);
+        Workbook workbook = getWorkbookFromExcel(filePath1);
+        Sheet sheet = getSheetFromWorkbook(workbook,0);
+        Map<Integer, Map> dataset1 = populateDataFromSheet(sheet);
         //Map<Integer, Map> dataset2 = readExcelSheetByName(filePath1,0,startRowNumber);
 
 
