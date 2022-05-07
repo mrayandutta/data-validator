@@ -120,6 +120,21 @@ public class ExcelUtil {
         cell.setCellStyle(headerCellStyle);
 
     }
+
+    public static void saveWorkBookChanges(Workbook workbook,String filePath)
+    {
+        try {
+            // Write the output to a file
+            FileOutputStream fileOut = new FileOutputStream(filePath);
+            workbook.write(fileOut);
+            fileOut.close();
+            workbook.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
     public static void main(String[] args)
     {
         String sheetName="Employee";

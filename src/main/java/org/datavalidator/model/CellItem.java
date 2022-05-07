@@ -37,4 +37,13 @@ public class CellItem
     public void setCell(Cell cell) {
         this.cell = cell;
     }
+
+    @Override
+    public String toString() {
+        return "CellItem{" +
+                "data='" + data + '\'' +
+                ", rowNumber=" + rowNumber +
+                ", cell=" + cell +
+                '}';
+    }
 }
