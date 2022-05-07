@@ -1,5 +1,9 @@
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.datavalidator.model.CellItem;
 import org.datavalidator.util.DataCompareUtil;
+import org.datavalidator.util.ExcelUtil;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +16,16 @@ import org.junit.jupiter.api.Test;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 public class DataCompareUtilTest {
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    //@DisplayName("Test DataCompareUtil compareRowMap")
-    //@Test
+    @DisplayName("Test DataCompareUtil compareRowMap")
+    @Test
     public void testCompareRowMap()
     {
         Map<String, CellItem> sourceMap = new LinkedHashMap<>();
@@ -68,7 +76,16 @@ public class DataCompareUtilTest {
         targetDataMap.put(1,targetRowMap1);
         targetDataMap.put(2,targetRowMap2);
 
-        DataCompareUtil.compare(sourceDataMap,targetDataMap,null);
+        Workbook mockWorkbook = mock(Workbook.class);
+        CellStyle mockCellStyle = mock(CellStyle.class);
+        Cell mockCell = mock(Cell.class);
+        when(mockWorkbook.createCellStyle()).thenReturn(mockCellStyle);
+
+        //mockStatic(ExcelUtil.class);
+
+        //when(ExcelUtil.highLightCell(any(),any())).thenAnswer(i->mockCell);
+
+        DataCompareUtil.compare(sourceDataMap,targetDataMap,mockWorkbook);
 
     }
 }

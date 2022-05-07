@@ -102,6 +102,66 @@ public class ExcelUtil {
 
     }
 
+    public static Map<String,String> getMappingData(Sheet sheet)
+    {
+        Map<String,String> sourceTargetMap = new LinkedHashMap<>();
+        try
+        {
+            int numberOfRows = sheet.getPhysicalNumberOfRows();
+            List<Integer> keyColumnIndexList = new ArrayList<>();
+            Map<Integer,String> sourceColumnMap = new LinkedHashMap<>();
+            Map<Integer,String> targetColumnMap = new LinkedHashMap<>();
+            // Create a DataFormatter to format and get each cell's value as String
+            DataFormatter dataFormatter = new DataFormatter();
+            for (int i = 0; i < numberOfRows; i++)
+            {
+                Map<String,CellItem> dataMap = new LinkedHashMap<>();
+                Row row = sheet.getRow(i);
+                int numberOfColumns = row.getPhysicalNumberOfCells();
+                for (int j = 0; j < numberOfColumns; j++)
+                {
+                    Cell cell = row.getCell(j);
+                    if(cell!=null)
+                    {
+                        String cellValue = dataFormatter.formatCellValue(cell);
+                        if(i==0)
+                        {
+                           if( j >0 && cellValue!=null && cellValue.equalsIgnoreCase("Y"))
+                           {
+                               keyColumnIndexList.add(j);
+                           }
+                        }
+                        else
+                        {
+                            if(i==1 & j>0)
+                            {
+                                sourceColumnMap.put(j,cellValue);
+                            }
+                            if(i==2 & j>0)
+                            {
+                                targetColumnMap.put(j,cellValue);
+                                sourceTargetMap.put(sourceColumnMap.get(j),cellValue);
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            //
+        }
+        //logger.info("Read data from sheet '"+sheetName+"'");
+        logger.info("sourceTargetMap:{}",sourceTargetMap);
+        return sourceTargetMap;
+
+    }
+
     public static void highLightCell(Cell cell,Workbook workbook) {
         // Create a Font for styling header cells
         //Font headerFont = workbook.createFont();

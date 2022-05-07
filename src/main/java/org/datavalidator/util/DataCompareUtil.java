@@ -26,13 +26,11 @@ public class DataCompareUtil {
 
     public static void compareRowMap(Map<String, CellItem> sourceMap, Map<String, CellItem> targetMap)
     {
-        //List output =
         sourceMap.entrySet().stream()
                 .filter(item ->
                 {
                     boolean valueMismatch = true;
                     String sourceKey = item.getKey();
-                    //String sourceValue = item.getValue();
                     CellItem sourceCellItem = item.getValue();
                     if(targetMap.containsKey(sourceKey))
                     {
@@ -49,6 +47,22 @@ public class DataCompareUtil {
                 //.collect(Collectors.toList());
                 //logger.info("output:{}",output);
 
+    }
+
+    public static boolean filterMappedColumns(Map.Entry<String,CellItem> item,Map<String, CellItem> targetMap)
+    {
+        boolean valueMismatch = true;
+        String sourceKey = item.getKey();
+        CellItem sourceCellItem = item.getValue();
+        if(targetMap.containsKey(sourceKey))
+        {
+            CellItem targetCellItem = targetMap.get(sourceKey);
+            if(sourceCellItem.getData().equalsIgnoreCase(targetCellItem.getData()))
+            {
+                valueMismatch=false;
+            }
+        }
+        return valueMismatch;
     }
 
     public static void compareRowMapAndHighlight(Map<String, CellItem> sourceMap, Map<String, CellItem> targetMap, Workbook workbook)
