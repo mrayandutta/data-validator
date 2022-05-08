@@ -45,7 +45,12 @@ public class DataCompareUtilTest {
         mappingData.put("C2","C2");
         mappingData.put("C3","C3");
 
-        DataCompareUtil.compareRowMapAndHighlight(sourceMap,targetMap,mappingData,null);
+        Workbook mockWorkbook = mock(Workbook.class);
+        CellStyle mockCellStyle = mock(CellStyle.class);
+        Cell mockCell = mock(Cell.class);
+        when(mockWorkbook.createCellStyle()).thenReturn(mockCellStyle);
+
+        DataCompareUtil.compareRowMapAndHighlight(sourceMap,targetMap,mappingData,mockWorkbook);
 
     }
 

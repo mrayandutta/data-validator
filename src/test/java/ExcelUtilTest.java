@@ -28,4 +28,14 @@ public class ExcelUtilTest {
         logger.info("mappingData:{}",mappingData);
     }
 
+    @DisplayName("Test ExcelUtil getWorkbookFromExcel and getSheetFromWorkbook")
+    @Test
+    public void testFlow()
+    {
+        String filePath1 = "./sample.xlsx";
+        Workbook workbook = ExcelUtil.getWorkbookFromExcel(filePath1);
+        Sheet sheet = ExcelUtil.getSheetFromWorkbook(workbook,0);
+        Map<Integer, Map> dataset1 = ExcelUtil.getDataFromSheet(sheet);
+    }
+
 }

@@ -13,6 +13,11 @@ import java.util.*;
 public class ExcelUtil {
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    /**
+     * Method to return an Excel workbook book when location is supplied
+     * @param filePath
+     * @return
+     */
     public static Workbook getWorkbookFromExcel(String filePath)
     {
         Workbook workbook  = null;
@@ -58,9 +63,7 @@ public class ExcelUtil {
                         {
                             String columnName= headerMap.get(String.valueOf(j));
                             CellItem cellItem = new CellItem(cellValue,i,cell);
-                            //dataMap.put(columnName,cellValue);
                             dataMap.put(columnName,cellItem);
-
                         }
                     }
                     else
@@ -72,7 +75,6 @@ public class ExcelUtil {
                 {
                     rowMap.put(i,dataMap);
                 }
-
             }
         }
         catch (Exception e)
@@ -164,7 +166,7 @@ public class ExcelUtil {
         headerCellStyle.setFillForegroundColor(IndexedColors.YELLOW.index);
         // and solid fill pattern produces solid grey cell fill
         headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        //cell.setCellStyle(headerCellStyle);
+        cell.setCellStyle(headerCellStyle);
 
     }
 
