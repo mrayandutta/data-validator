@@ -24,7 +24,12 @@ public class Application {
         logger.info("sourceDataSet:{}",sourceDataSet);
         logger.info("targetDataSet:{}",targetDataSet);
 
-        DataCompareUtil.compare(sourceDataSet,targetDataSet,workbook);
+        String mappingFilePath = "./mapping.xlsx";
+        Workbook mappingWorkbook = ExcelUtil.getWorkbookFromExcel(mappingFilePath);
+        Sheet mappingSheet = ExcelUtil.getSheetFromWorkbook(mappingWorkbook,0);
+        Map<String,String> mappingData = ExcelUtil.getMappingData(mappingSheet);
+
+        DataCompareUtil.compare(sourceDataSet,targetDataSet,workbook,mappingData);
         ExcelUtil.saveWorkBookChanges(workbook,outputFilePath);
 
     }

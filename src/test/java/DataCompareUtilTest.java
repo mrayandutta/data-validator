@@ -39,7 +39,7 @@ public class DataCompareUtilTest {
         targetMap.put("C2",new CellItem("B1",1,null));
         targetMap.put("C3",new CellItem("C1",1,null));
 
-        DataCompareUtil.compareRowMap(sourceMap,targetMap);
+        DataCompareUtil.compareRowMap(sourceMap,targetMap,null);
 
     }
 
@@ -85,7 +85,7 @@ public class DataCompareUtilTest {
 
         //when(ExcelUtil.highLightCell(any(),any())).thenAnswer(i->mockCell);
 
-        DataCompareUtil.compare(sourceDataMap,targetDataMap,mockWorkbook);
+        DataCompareUtil.compare(sourceDataMap,targetDataMap,mockWorkbook,null);
 
     }
 }

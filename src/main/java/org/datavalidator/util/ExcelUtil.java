@@ -188,7 +188,8 @@ public class ExcelUtil {
             FileOutputStream fileOut = new FileOutputStream(filePath);
             workbook.write(fileOut);
             fileOut.close();
-            workbook.close();
+            //workbook.close();
+            logger.info("File written at :{}",filePath);
         }
         catch (Exception e)
         {

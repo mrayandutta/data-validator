@@ -11,85 +11,64 @@ import java.util.Map;
 
 public class DataCompareUtil {
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    public static void compare(Map<Integer, Map> sourceDataSet,Map<Integer,Map> targetDataSet,Workbook workbook)
+    public static void compare(Map<Integer, Map> sourceDataSet,Map<Integer,Map> targetDataSet,Workbook workbook,Map<String, String> mappingData)
     {
         sourceDataSet.entrySet().stream()
                 .forEach(
                         sourceRow->
                         {
                             Map targetRowValue = targetDataSet.get(sourceRow.getKey());
-                            //compareRowMap(sourceRow.getValue(),targetRowValue);
-                            compareRowMapAndHighlight(sourceRow.getValue(),targetRowValue,workbook);
+                            //compareRowMap(sourceRow.getValue(),targetRowValue,mappingData);
+                            compareRowMapAndHighlight(sourceRow.getValue(),targetRowValue,workbook,mappingData);
                         }
                 );
     }
 
-    public static void compareRowMap(Map<String, CellItem> sourceMap, Map<String, CellItem> targetMap)
+    public static void compareRowMap(Map<String, CellItem> sourceMap, Map<String, CellItem> targetMap,Map<String, String> mappingData)
     {
         sourceMap.entrySet().stream()
-                .filter(item ->
-                {
-                    boolean valueMismatch = true;
-                    String sourceKey = item.getKey();
-                    CellItem sourceCellItem = item.getValue();
-                    if(targetMap.containsKey(sourceKey))
-                    {
-                        CellItem targetCellItem = targetMap.get(sourceKey);
-                        if(sourceCellItem.getData().equalsIgnoreCase(targetCellItem.getData()))
-                        {
-                            valueMismatch=false;
-                        }
-                    }
-                    return valueMismatch;
-                })
-                //.map()
+                .filter(item -> filterMappedColumns(item,targetMap,mappingData))
                 .forEach(item->logger.info("Mismatch for key:{},value:{}",item.getKey(),item.getValue().getData()));
                 //.collect(Collectors.toList());
                 //logger.info("output:{}",output);
 
     }
 
-    public static boolean filterMappedColumns(Map.Entry<String,CellItem> item,Map<String, CellItem> targetMap)
+    public static boolean filterMappedColumns(Map.Entry<String,CellItem> item,Map<String, CellItem> targetMap,Map<String, String> mappingData)
     {
         boolean valueMismatch = true;
         String sourceKey = item.getKey();
-        CellItem sourceCellItem = item.getValue();
-        if(targetMap.containsKey(sourceKey))
+        if(mappingData.containsKey(item.getKey()))
         {
-            CellItem targetCellItem = targetMap.get(sourceKey);
-            if(sourceCellItem.getData().equalsIgnoreCase(targetCellItem.getData()))
+            String mappedTargetKey = mappingData.get(sourceKey);
+            CellItem sourceCellItem = item.getValue();
+            if(targetMap.containsKey(mappedTargetKey))
             {
-                valueMismatch=false;
+                CellItem targetCellItem = targetMap.get(mappedTargetKey);
+                if(sourceCellItem.getData().equalsIgnoreCase(targetCellItem.getData()))
+                {
+                    valueMismatch=false;
+                }
             }
+        }
+        else
+        {
+            logger.info(" Column {} is not included in mapping hence skipped ",sourceKey);
+            valueMismatch = false;
         }
         return valueMismatch;
     }
 
-    public static void compareRowMapAndHighlight(Map<String, CellItem> sourceMap, Map<String, CellItem> targetMap, Workbook workbook)
+    public static void compareRowMapAndHighlight(Map<String, CellItem> sourceMap, Map<String, CellItem> targetMap, Workbook workbook,Map<String, String> mappingData)
     {
         //List output =
         sourceMap.entrySet().stream()
-                .filter(item ->
-                {
-                    boolean valueMismatch = true;
-                    String sourceKey = item.getKey();
-                    //String sourceValue = item.getValue();
-                    CellItem sourceCellItem = item.getValue();
-                    if(targetMap.containsKey(sourceKey))
-                    {
-                        CellItem targetCellItem = targetMap.get(sourceKey);
-                        if(sourceCellItem.getData().equalsIgnoreCase(targetCellItem.getData()))
-                        {
-                            valueMismatch=false;
-                        }
-                    }
-                    return valueMismatch;
-                })
-
+                .filter(item -> filterMappedColumns(item,targetMap,mappingData))
                 .forEach(item->
                 {
                     Cell sourceCell= item.getValue().getCell();
-                    Cell targetCell= targetMap.get(item.getKey()).getCell();
+                    String targetKey = mappingData.get(item.getKey());
+                    Cell targetCell= targetMap.get(targetKey).getCell();
                     ExcelUtil.highLightCell(sourceCell,workbook);
                     ExcelUtil.highLightCell(targetCell,workbook);
                 });

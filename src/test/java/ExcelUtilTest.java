@@ -26,7 +26,6 @@ public class ExcelUtilTest {
         Sheet sheet = ExcelUtil.getSheetFromWorkbook(workbook,0);
         Map<String, String> mappingData =ExcelUtil.getMappingData(sheet);
         logger.info("mappingData:{}",mappingData);
-
     }
 
 }
