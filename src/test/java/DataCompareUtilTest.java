@@ -5,10 +5,14 @@ import org.datavalidator.model.CellItem;
 import org.datavalidator.util.DataCompareUtil;
 import org.datavalidator.util.ExcelUtil;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
+import org.powermock.api.mockito.PowerMockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -56,8 +60,7 @@ public class DataCompareUtilTest {
 
     @DisplayName("Test DataCompareUtil compare")
     @Test
-    public void testCompare()
-    {
+    public void testCompare() {
         Map<String, CellItem> sourceRowMap1 = new LinkedHashMap<>();
         sourceRowMap1.put("C1",new CellItem("A",1,null));
         sourceRowMap1.put("C2",new CellItem("B",1,null));
@@ -87,14 +90,20 @@ public class DataCompareUtilTest {
         targetDataMap.put(1,targetRowMap1);
         targetDataMap.put(2,targetRowMap2);
 
+
+
         Workbook mockWorkbook = mock(Workbook.class);
         CellStyle mockCellStyle = mock(CellStyle.class);
         Cell mockCell = mock(Cell.class);
         when(mockWorkbook.createCellStyle()).thenReturn(mockCellStyle);
 
-        //mockStatic(ExcelUtil.class);
+        //ExcelUtil mockExcelUtil = mock(ExcelUtil.class);
+        //when(mockExcelUtil.).thenReturn(mockCellStyle);
 
-        //when(ExcelUtil.highLightCell(any(),any())).thenAnswer(i->mockCell);
+        //DataCompareUtil dataCompareUtil = PowerMockito.field(DataCompareUtil.class, "b");
+        //Field field = PowerMockito.field(DataCompareUtil.class, "excelUtil");
+        //field.set(DataCompareUtil.class, mock(ExcelUtil.class));
+
 
         Map<String, String> mappingData = new LinkedHashMap<>();
         mappingData.put("C1","C1");
