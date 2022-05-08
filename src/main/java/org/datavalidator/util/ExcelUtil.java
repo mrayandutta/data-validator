@@ -1,16 +1,12 @@
 package org.datavalidator.util;
 
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.datavalidator.model.CellItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 
@@ -35,7 +31,7 @@ public class ExcelUtil {
        return workbook.getSheetAt(sheetNumber);
     }
 
-    public static Map<Integer,Map> populateDataFromSheet(Sheet sheet)
+    public static Map<Integer,Map> getDataFromSheet(Sheet sheet)
     {   Map<Integer,Map> rowMap = new LinkedHashMap<>();
         try
         {
@@ -54,11 +50,9 @@ public class ExcelUtil {
                     if(cell!=null)
                     {
                         String cellValue = dataFormatter.formatCellValue(cell);
-                        //System.out.print(cellValue + "\t");
                         if(i==0)
                         {
                             headerMap.put(String.valueOf(j),cellValue);
-                            //highLightCell(cell,workbook);
                         }
                         else
                         {
@@ -68,7 +62,6 @@ public class ExcelUtil {
                             dataMap.put(columnName,cellItem);
 
                         }
-                        //logger.info("j:{},headerMap:{},dataMap:{}",j,headerMap,dataMap);
                     }
                     else
                     {
@@ -81,12 +74,6 @@ public class ExcelUtil {
                 }
 
             }
-            // Write the output to a file
-            //FileOutputStream fileOut = new FileOutputStream("./color_test_new.xlsx");
-            //workbook.write(fileOut);
-            //fileOut.close();
-
-            //workbook.close();
         }
         catch (Exception e)
         {
@@ -177,7 +164,7 @@ public class ExcelUtil {
         headerCellStyle.setFillForegroundColor(IndexedColors.YELLOW.index);
         // and solid fill pattern produces solid grey cell fill
         headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        cell.setCellStyle(headerCellStyle);
+        //cell.setCellStyle(headerCellStyle);
 
     }
 
@@ -203,7 +190,7 @@ public class ExcelUtil {
         String filePath1 = "./sample.xlsx";
         Workbook workbook = getWorkbookFromExcel(filePath1);
         Sheet sheet = getSheetFromWorkbook(workbook,0);
-        Map<Integer, Map> dataset1 = populateDataFromSheet(sheet);
+        Map<Integer, Map> dataset1 = getDataFromSheet(sheet);
         //Map<Integer, Map> dataset2 = readExcelSheetByName(filePath1,0,startRowNumber);
 
 

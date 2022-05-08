@@ -29,17 +29,23 @@ public class DataCompareUtilTest {
     public void testCompareRowMap()
     {
         Map<String, CellItem> sourceMap = new LinkedHashMap<>();
-        Map<String, CellItem> targetMap = new LinkedHashMap<>();
 
         sourceMap.put("C1",new CellItem("A",1,null));
         sourceMap.put("C2",new CellItem("B",1,null));
         sourceMap.put("C3",new CellItem("C",1,null));
 
+        Map<String, CellItem> targetMap = new LinkedHashMap<>();
+
         targetMap.put("C1",new CellItem("A",1,null));
         targetMap.put("C2",new CellItem("B1",1,null));
         targetMap.put("C3",new CellItem("C1",1,null));
 
-        DataCompareUtil.compareRowMap(sourceMap,targetMap,null);
+        Map<String, String> mappingData = new LinkedHashMap<>();
+        mappingData.put("C1","C1");
+        mappingData.put("C2","C2");
+        mappingData.put("C3","C3");
+
+        DataCompareUtil.compareRowMapAndHighlight(sourceMap,targetMap,mappingData,null);
 
     }
 
@@ -85,7 +91,12 @@ public class DataCompareUtilTest {
 
         //when(ExcelUtil.highLightCell(any(),any())).thenAnswer(i->mockCell);
 
-        DataCompareUtil.compare(sourceDataMap,targetDataMap,mockWorkbook,null);
+        Map<String, String> mappingData = new LinkedHashMap<>();
+        mappingData.put("C1","C1");
+        mappingData.put("C2","C2");
+        mappingData.put("C3","C3");
+
+        DataCompareUtil.compare(sourceDataMap,targetDataMap,mappingData,mockWorkbook);
 
     }
 }

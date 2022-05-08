@@ -17,9 +17,9 @@ public class Application {
         String outputFilePath = "./sample_highlighted.xlsx";
         Workbook workbook = ExcelUtil.getWorkbookFromExcel(inputFilePath);
         Sheet sourceSheet = ExcelUtil.getSheetFromWorkbook(workbook,0);
-        Map<Integer, Map> sourceDataSet = ExcelUtil.populateDataFromSheet(sourceSheet);
+        Map<Integer, Map> sourceDataSet = ExcelUtil.getDataFromSheet(sourceSheet);
         Sheet targetSheet = ExcelUtil.getSheetFromWorkbook(workbook,1);
-        Map<Integer, Map> targetDataSet = ExcelUtil.populateDataFromSheet(targetSheet);
+        Map<Integer, Map> targetDataSet = ExcelUtil.getDataFromSheet(targetSheet);
 
         logger.info("sourceDataSet:{}",sourceDataSet);
         logger.info("targetDataSet:{}",targetDataSet);
@@ -29,7 +29,7 @@ public class Application {
         Sheet mappingSheet = ExcelUtil.getSheetFromWorkbook(mappingWorkbook,0);
         Map<String,String> mappingData = ExcelUtil.getMappingData(mappingSheet);
 
-        DataCompareUtil.compare(sourceDataSet,targetDataSet,workbook,mappingData);
+        DataCompareUtil.compare(sourceDataSet,targetDataSet,mappingData,workbook);
         ExcelUtil.saveWorkBookChanges(workbook,outputFilePath);
 
     }

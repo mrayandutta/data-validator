@@ -9,29 +9,21 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
+/**
+ * Utility to compare the data sets based on the mapping provided
+ */
 public class DataCompareUtil {
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    public static void compare(Map<Integer, Map> sourceDataSet,Map<Integer,Map> targetDataSet,Workbook workbook,Map<String, String> mappingData)
+    public static void compare(Map<Integer, Map> sourceDataSet,Map<Integer,Map> targetDataSet,Map<String, String> mappingData,Workbook workbook)
     {
         sourceDataSet.entrySet().stream()
                 .forEach(
                         sourceRow->
                         {
                             Map targetRowValue = targetDataSet.get(sourceRow.getKey());
-                            //compareRowMap(sourceRow.getValue(),targetRowValue,mappingData);
-                            compareRowMapAndHighlight(sourceRow.getValue(),targetRowValue,workbook,mappingData);
+                            compareRowMapAndHighlight(sourceRow.getValue(),targetRowValue,mappingData,workbook);
                         }
                 );
-    }
-
-    public static void compareRowMap(Map<String, CellItem> sourceMap, Map<String, CellItem> targetMap,Map<String, String> mappingData)
-    {
-        sourceMap.entrySet().stream()
-                .filter(item -> filterMappedColumns(item,targetMap,mappingData))
-                .forEach(item->logger.info("Mismatch for key:{},value:{}",item.getKey(),item.getValue().getData()));
-                //.collect(Collectors.toList());
-                //logger.info("output:{}",output);
-
     }
 
     public static boolean filterMappedColumns(Map.Entry<String,CellItem> item,Map<String, CellItem> targetMap,Map<String, String> mappingData)
@@ -59,9 +51,8 @@ public class DataCompareUtil {
         return valueMismatch;
     }
 
-    public static void compareRowMapAndHighlight(Map<String, CellItem> sourceMap, Map<String, CellItem> targetMap, Workbook workbook,Map<String, String> mappingData)
+    public static void compareRowMapAndHighlight(Map<String, CellItem> sourceMap, Map<String, CellItem> targetMap,Map<String, String> mappingData,Workbook workbook)
     {
-        //List output =
         sourceMap.entrySet().stream()
                 .filter(item -> filterMappedColumns(item,targetMap,mappingData))
                 .forEach(item->
