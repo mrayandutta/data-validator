@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory;
 public class Application {
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     public static void main(String[] args) {
-        String inputFilePath = "./input-sample.xlsx";
+        //String inputFilePath = "./input-sample.xlsx";
+        String inputFilePath = "./input-sample-100.xlsx";
         String outputFilePath = "./output.xlsx";
         //String inputFilePath = "C://data-validator-test/input-sample.xlsx";
         //String outputFilePath = "C://data-validator-test//output.xlsx";
