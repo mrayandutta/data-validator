@@ -1,5 +1,6 @@
 package org.datavalidator.util;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -8,9 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Utility to compare the data sets based on the mapping provided
@@ -82,6 +87,35 @@ public class DataCompareUtil {
         }
         return valueMismatch;
     }
+
+    /*
+    public static void findDuplicateInStream(   Map<Integer, Map> sourceDataSet,Map<String,String> keyColumnMappingData,
+                                                           Stream<T> stream)
+    {
+        sourceDataSet.entrySet().stream()
+                .collect(
+                        Collectors.groupingBy(
+                                item ->
+                                {
+                                    StringBuffer value = new StringBuffer();
+                                    Map<String,CellItem> rowMap= (Map<String, CellItem>) item;
+                                    for(Map.Entry<String,CellItem> me :rowMap.entrySet())
+                                    {
+                                        if(keyColumnMappingData.containsKey(me.getKey()))
+                                        {
+                                            CellItem cellItem = me.getValue();
+                                            value.append(cellItem.getData());
+                                        }
+                                        CellItem cellItem = me.getValue();
+                                        value.append(cellItem.getData());
+                                    }
+                                   return value.toString();
+                                }
+                        ),Collectors.toList()
+                );
+
+    }
+     */
 
     public static void compareRowMapAndHighlight(Map<String, CellItem> sourceMap, Map<String, CellItem> targetMap,Map<String, String> mappingData,Workbook workbook)
     {
