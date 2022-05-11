@@ -34,16 +34,16 @@ public class DataCompareUtil {
         List<String> missingColumnInActual = mappingColumns.stream()
                 .filter(element -> !actualColumns.contains(element))
                 .collect(Collectors.toList());
-        List<String> addtionalColumnInActual = actualColumns.stream()
+        List<String> additionalColumnInActual = actualColumns.stream()
                 .filter(element -> !mappingColumns.contains(element))
                 .collect(Collectors.toList());
         if(!missingColumnInActual.isEmpty())
         {
             logger.warn("Following columns are present in mapping but missing in actual :{}",missingColumnInActual);
         }
-        if(!addtionalColumnInActual.isEmpty())
+        if(!additionalColumnInActual.isEmpty())
         {
-            logger.warn("Following columns are NOT present in mapping but available  in actual :{}",addtionalColumnInActual);
+            logger.warn("Following columns are NOT present in mapping but available  in actual :{}",additionalColumnInActual);
         }
     }
 
@@ -77,7 +77,7 @@ public class DataCompareUtil {
         }
         else
         {
-            logger.info(" Column {} is not included in mapping hence skipped ",sourceKey);
+            //logger.info(" Column {} is not included in mapping hence skipped ",sourceKey);
             valueMismatch = false;
         }
         return valueMismatch;

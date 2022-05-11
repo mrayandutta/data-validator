@@ -88,7 +88,7 @@ public class ExcelUtil {
             //
         }
         //logger.info("Read data from sheet '"+sheetName+"'");
-        logger.info("rowMap:{}",rowMap);
+        //logger.info("rowMap:{}",rowMap);
         return rowMap;
     }
 
@@ -106,7 +106,7 @@ public class ExcelUtil {
         }
 
 
-        logger.info("columnNameList:{}",columnNameList);
+        //logger.info("columnNameList:{}",columnNameList);
         return columnNameList;
 
     }
