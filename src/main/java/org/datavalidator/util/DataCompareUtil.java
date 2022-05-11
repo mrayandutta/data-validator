@@ -94,6 +94,7 @@ public class DataCompareUtil {
                     Cell targetCell= targetMap.get(targetKey).getCell();
                     ExcelUtil.highLightCell(sourceCell,workbook);
                     ExcelUtil.highLightCell(targetCell,workbook);
+
                 });
 
     }

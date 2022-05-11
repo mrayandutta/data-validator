@@ -1,6 +1,7 @@
 package org.datavalidator.util;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCreationHelper;
 import org.datavalidator.model.CellItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,6 +189,22 @@ public class ExcelUtil {
         headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         cell.setCellStyle(headerCellStyle);
 
+    }
+
+    public static void addCommentToCell(Workbook workbook,int sheetNumber,Cell cell,String commentText)
+    {
+        Sheet sheet = workbook.getSheetAt(sheetNumber);
+        Drawing<Shape> drawing = (Drawing<Shape>) sheet.createDrawingPatriarch();
+        ClientAnchor clientAnchor = drawing.createAnchor(0, 0, 0, 0, 0, 2, 7, 12);
+
+        Comment comment = (Comment) drawing.createCellComment(clientAnchor);
+        CreationHelper creationHelper = (XSSFCreationHelper) workbook.getCreationHelper();
+        RichTextString richTextString = creationHelper.createRichTextString(commentText);
+
+        comment.setString(richTextString);
+        comment.setAuthor("DataValidator");
+
+        cell.setCellComment(comment);
     }
 
     public static void saveWorkBookChanges(Workbook workbook,String filePath)
