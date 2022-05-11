@@ -1,7 +1,6 @@
 package org.datavalidator;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Sheet;
@@ -32,15 +31,12 @@ public class Application {
         Sheet sourceSheet = ExcelUtil.getSheetFromWorkbook(workbook,1);
         Map<Integer, Map> sourceDataSet = ExcelUtil.getDataFromSheet(sourceSheet);
         logger.info("sourceDataSet:{}",sourceDataSet);
-        List<String> sourceDataColumns = ExcelUtil.getColumnListFromSheet(sourceSheet);
-        logger.info("sourceDataColumns:{}",sourceDataColumns);
-
 
         Sheet targetSheet = ExcelUtil.getSheetFromWorkbook(workbook,2);
         Map<Integer, Map> targetDataSet = ExcelUtil.getDataFromSheet(targetSheet);
         logger.info("targetDataSet:{}",targetDataSet);
-        List<String> targetDataColumns = ExcelUtil.getColumnListFromSheet(targetSheet);
-        logger.info("targetDataColumns:{}",targetDataColumns);
+
+        DataCompareUtil.compareMappingColumnsWithSourceAndTarget(mappingSheet,sourceSheet,targetSheet);
 
         DataCompareUtil.compare(sourceDataSet,targetDataSet,mappingData,workbook);
         ExcelUtil.saveWorkBookChanges(workbook,outputFilePath);

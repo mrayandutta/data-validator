@@ -92,14 +92,15 @@ public class ExcelUtil {
         return rowMap;
     }
 
-    public static List<String> getColumnListFromSheet(Sheet sheet)
+    public static List<String> getColumnListFromSheet(Sheet sheet,int rowNumber)
     {   List<String> columnNameList = new ArrayList<>();
         DataFormatter dataFormatter = new DataFormatter();
-        Row firstRow = sheet.rowIterator().next();
-        int numberOfColumns = firstRow.getPhysicalNumberOfCells();
+        //Row firstRow = sheet.rowIterator().next();
+        Row row = sheet.getRow(rowNumber);
+        int numberOfColumns = row.getPhysicalNumberOfCells();
         for (int j = 0; j < numberOfColumns; j++)
         {
-            Cell cell = firstRow.getCell(j);
+            Cell cell = row.getCell(j);
             String cellValue = dataFormatter.formatCellValue(cell);
             columnNameList.add(cellValue);
         }
