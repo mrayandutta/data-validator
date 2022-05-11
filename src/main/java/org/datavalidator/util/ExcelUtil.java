@@ -26,14 +26,16 @@ public class ExcelUtil {
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error("Error while trying to get workbook from filePath*:{}",filePath);
+            logger.error("Exception details :{}",e);
+            //e.printStackTrace();
         }
         return workbook;
     }
 
     public static Sheet getSheetFromWorkbook(Workbook workbook,int sheetNumber)
     {
-       return workbook.getSheetAt(sheetNumber);
+        return workbook.getSheetAt(sheetNumber);
     }
 
     public static Map<Integer,Map> getDataFromSheet(Sheet sheet)
@@ -83,11 +85,28 @@ public class ExcelUtil {
         }
         finally
         {
-           //
+            //
         }
         //logger.info("Read data from sheet '"+sheetName+"'");
         logger.info("rowMap:{}",rowMap);
         return rowMap;
+    }
+
+    public static List<String> getColumnListFromSheet(Sheet sheet)
+    {   List<String> columnNameList = new ArrayList<>();
+        DataFormatter dataFormatter = new DataFormatter();
+        Row firstRow = sheet.rowIterator().next();
+        int numberOfColumns = firstRow.getPhysicalNumberOfCells();
+        for (int j = 0; j < numberOfColumns; j++)
+        {
+            Cell cell = firstRow.getCell(j);
+            String cellValue = dataFormatter.formatCellValue(cell);
+            columnNameList.add(cellValue);
+        }
+
+
+        logger.info("columnNameList:{}",columnNameList);
+        return columnNameList;
 
     }
 
@@ -115,10 +134,10 @@ public class ExcelUtil {
                         String cellValue = dataFormatter.formatCellValue(cell);
                         if(i==0)
                         {
-                           if( j >0 && cellValue!=null && cellValue.equalsIgnoreCase("Y"))
-                           {
-                               keyColumnIndexList.add(j);
-                           }
+                            if( j >0 && cellValue!=null && cellValue.equalsIgnoreCase("Y"))
+                            {
+                                keyColumnIndexList.add(j);
+                            }
                         }
                         else
                         {
