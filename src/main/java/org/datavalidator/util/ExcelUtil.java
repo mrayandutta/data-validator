@@ -112,6 +112,32 @@ public class ExcelUtil {
 
     }
 
+    public static Map<String,String> getKeyColumnMappingData(Sheet sheet)
+    {
+        Map<String,String> keyColumnMap = new LinkedHashMap<>();
+        List<Integer> keyColumnIndexList = new ArrayList<>();
+        Row firstRow = sheet.getRow(0);
+        Row sourceMappingRow = sheet.getRow(1);
+        Row targetMappingRow = sheet.getRow(2);
+        DataFormatter dataFormatter = new DataFormatter();
+        //int numberOfColumns = firstRow.getPhysicalNumberOfCells();
+        int numberOfColumns = firstRow.getLastCellNum();
+        for (int i = 0; i < numberOfColumns; i++) {
+            Cell cell = firstRow.getCell(i);
+            String cellValue = dataFormatter.formatCellValue(cell);
+            if("Y".equalsIgnoreCase(cellValue))
+            {
+                keyColumnIndexList.add(i) ;
+                Cell sourceCell = sourceMappingRow.getCell(i);
+                Cell targetCell = targetMappingRow.getCell(i);
+                keyColumnMap.put(dataFormatter.formatCellValue(sourceCell),dataFormatter.formatCellValue(targetCell));
+
+            }
+
+        }
+        return keyColumnMap;
+    }
+
     public static Map<String,String> getMappingData(Sheet sheet)
     {
         Map<String,String> sourceTargetMap = new LinkedHashMap<>();

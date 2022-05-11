@@ -28,6 +28,9 @@ public class Application {
         Map<String,String> mappingData = ExcelUtil.getMappingData(mappingSheet);
         logger.info("mappingData:{}",mappingData);
 
+        Map<String,String> keyColumnMappingData = ExcelUtil.getKeyColumnMappingData(mappingSheet);
+        logger.info("keyColumnMappingData:{}",keyColumnMappingData);
+
         Workbook workbook = ExcelUtil.getWorkbookFromExcel(inputFilePath);
         Sheet sourceSheet = ExcelUtil.getSheetFromWorkbook(workbook,1);
         Map<Integer, Map> sourceDataSet = ExcelUtil.getDataFromSheet(sourceSheet);
