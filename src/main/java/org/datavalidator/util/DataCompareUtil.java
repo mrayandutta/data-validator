@@ -1,6 +1,5 @@
 package org.datavalidator.util;
 
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -9,13 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Utility to compare the data sets based on the mapping provided
@@ -88,7 +82,7 @@ public class DataCompareUtil {
         return valueMismatch;
     }
 
-    /*
+/*
     public static void findDuplicateInStream(   Map<Integer, Map> sourceDataSet,Map<String,String> keyColumnMappingData,
                                                            Stream<T> stream)
     {
@@ -115,7 +109,82 @@ public class DataCompareUtil {
                 );
 
     }
-     */
+  */
+
+    public static void findDuplicateInStream(   Map<Integer, Map> sourceDataSet,Map<String,String> keyColumnMappingData)
+    {
+        Map<Integer, Map> uniqueDataSet = new LinkedHashMap<>();
+        sourceDataSet.entrySet()
+                .stream()
+                .collect(
+                        Collectors.groupingBy(item->getConcatenatedFieldValueFromItem(item.getValue(),keyColumnMappingData))
+                ).entrySet().stream()
+                .filter(item->checkItemForFilter(item,uniqueDataSet))
+                .forEach(x->logger.info("x:{}",x));
+        logger.info("uniqueDataSet:{}",uniqueDataSet);
+        Map<Integer, Map> duplicateDataSet = new LinkedHashMap<>();
+        sourceDataSet.entrySet()
+                .stream()
+                .collect(
+                        Collectors.groupingBy(item->getConcatenatedFieldValueFromItem(item.getValue(),keyColumnMappingData))
+                ).entrySet().stream()
+                .filter(item->!checkItemForFilter(item,duplicateDataSet))
+                .forEach(x->logger.info("x:{}",x));
+        logger.info("duplicateDataSet:{}",duplicateDataSet);
+
+
+    }
+
+    public static void getUniqueData(   Map<Integer, Map> sourceDataSet,Map<String,String> keyColumnMappingData)
+    {
+
+
+
+
+    }
+
+    private static boolean checkItemForFilter(Object itemObj,Map<Integer, Map> uniqueDataSet)
+    {
+       boolean validEntry = true;
+       Map.Entry me = (Map.Entry) itemObj;
+       String key = (String) me.getKey();
+       List value = (List) me.getValue();
+
+       logger.info("key:{}",me.getKey());
+       if(!value.isEmpty() && value.size()>1)
+       {
+           logger.info("Record with key :{} is invalid as item count is :{}",key,value.size());
+       }
+       else
+       {
+           logger.info("Record with key :{} is valid ",key);
+           Map.Entry<Integer,Map> recordEntry = (Map.Entry<Integer,Map>) value.get(0);
+           uniqueDataSet.put(recordEntry.getKey(), recordEntry.getValue());
+       }
+       validEntry = false;
+       return validEntry;
+
+    }
+
+    private static String getConcatenatedFieldValueFromItem(Map<String,CellItem> rowMap,Map<String,String> keyColumnMappingData)
+    {
+        String concatenatedKey = "";
+        List<String> keyList = new ArrayList<>();
+        for (Map.Entry<String, CellItem> entry : rowMap.entrySet()) {
+            logger.info(entry.getKey() + ":" + entry.getValue());
+            if(keyColumnMappingData.containsKey(entry.getKey()))
+            {
+                keyList.add(entry.getValue().getData());
+            }
+            else
+            {
+                logger.warn("Ignoring column :{} as it is not part of key columns",entry.getKey());
+            }
+        }
+        concatenatedKey = String.join("_",keyList);
+        return concatenatedKey;
+
+    }
 
     public static void compareRowMapAndHighlight(Map<String, CellItem> sourceMap, Map<String, CellItem> targetMap,Map<String, String> mappingData,Workbook workbook)
     {
@@ -130,6 +199,10 @@ public class DataCompareUtil {
                     ExcelUtil.highLightCell(targetCell,workbook);
 
                 });
+
+    }
+
+    public static void main(String[] args) {
 
     }
 }

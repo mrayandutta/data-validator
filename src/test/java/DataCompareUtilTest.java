@@ -113,4 +113,98 @@ public class DataCompareUtilTest {
         DataCompareUtil.compare(sourceDataMap,targetDataMap,mappingData,mockWorkbook);
 
     }
+
+
+    @DisplayName("Test DataCompareUtil testFindDuplicateInStream")
+    @Test
+    public void testFindDuplicateInStream() {
+        Map<String, CellItem> sourceRowMap1 = new LinkedHashMap<>();
+        sourceRowMap1.put("C1",new CellItem("A",1,null));
+        sourceRowMap1.put("C2",new CellItem("B",1,null));
+        sourceRowMap1.put("C3",new CellItem("C",1,null));
+
+        Map<String, CellItem> sourceRowMap2 = new LinkedHashMap<>();
+        sourceRowMap2.put("C1",new CellItem("P",2,null));
+        sourceRowMap2.put("C2",new CellItem("Q",2,null));
+        sourceRowMap2.put("C3",new CellItem("R",2,null));
+
+        Map<String, CellItem> sourceRowMap1Duplicate = new LinkedHashMap<>();
+        sourceRowMap1Duplicate.put("C1",new CellItem("A",1,null));
+        sourceRowMap1Duplicate.put("C2",new CellItem("B",1,null));
+        sourceRowMap1Duplicate.put("C3",new CellItem("XYZ",1,null));
+
+        Map<String, CellItem> sourceRowMap2Duplicate = new LinkedHashMap<>();
+        sourceRowMap2Duplicate.put("C1",new CellItem("P",2,null));
+        sourceRowMap2Duplicate.put("C2",new CellItem("Q",2,null));
+        sourceRowMap2Duplicate.put("C3",new CellItem("R123",2,null));
+
+        Map<String, CellItem> sourceRowMap3 = new LinkedHashMap<>();
+        sourceRowMap3.put("C1",new CellItem("X",3,null));
+        sourceRowMap3.put("C2",new CellItem("Y",3,null));
+        sourceRowMap3.put("C3",new CellItem("Z",3,null));
+
+        Map<Integer, Map> sourceDataMap = new LinkedHashMap<>();
+
+        sourceDataMap.put(1,sourceRowMap1);
+        sourceDataMap.put(2,sourceRowMap2);
+        sourceDataMap.put(3,sourceRowMap1Duplicate);
+        sourceDataMap.put(4,sourceRowMap2Duplicate);
+        sourceDataMap.put(5,sourceRowMap3);
+
+        Map<String,String> keyColumnMappingData = new LinkedHashMap<>();
+        keyColumnMappingData.put("C1","C1");
+        keyColumnMappingData.put("C2","C2");
+
+        DataCompareUtil.findDuplicateInStream(sourceDataMap,keyColumnMappingData);
+
+
+    }
+
+    @DisplayName("Test DataCompareUtil getUniqueData")
+    @Test
+    public void testGetUniqueData() {
+        Map<String, CellItem> sourceRowMap1 = new LinkedHashMap<>();
+        sourceRowMap1.put("C1",new CellItem("A",1,null));
+        sourceRowMap1.put("C2",new CellItem("B",1,null));
+        sourceRowMap1.put("C3",new CellItem("C",1,null));
+
+        Map<String, CellItem> sourceRowMap2 = new LinkedHashMap<>();
+        sourceRowMap2.put("C1",new CellItem("P",2,null));
+        sourceRowMap2.put("C2",new CellItem("Q",2,null));
+        sourceRowMap2.put("C3",new CellItem("R",2,null));
+
+        Map<String, CellItem> sourceRowMap1Duplicate = new LinkedHashMap<>();
+        sourceRowMap1Duplicate.put("C1",new CellItem("A",1,null));
+        sourceRowMap1Duplicate.put("C2",new CellItem("B",1,null));
+        sourceRowMap1Duplicate.put("C3",new CellItem("XYZ",1,null));
+
+        Map<String, CellItem> sourceRowMap2Duplicate = new LinkedHashMap<>();
+        sourceRowMap2Duplicate.put("C1",new CellItem("P",2,null));
+        sourceRowMap2Duplicate.put("C2",new CellItem("Q",2,null));
+        sourceRowMap2Duplicate.put("C3",new CellItem("R123",2,null));
+
+        Map<String, CellItem> sourceRowMap3 = new LinkedHashMap<>();
+        sourceRowMap3.put("C1",new CellItem("X",3,null));
+        sourceRowMap3.put("C2",new CellItem("Y",3,null));
+        sourceRowMap3.put("C3",new CellItem("Z",3,null));
+
+        Map<Integer, Map> sourceDataMap = new LinkedHashMap<>();
+
+        sourceDataMap.put(1,sourceRowMap1);
+        sourceDataMap.put(2,sourceRowMap2);
+        sourceDataMap.put(3,sourceRowMap1Duplicate);
+        sourceDataMap.put(4,sourceRowMap2Duplicate);
+        sourceDataMap.put(5,sourceRowMap3);
+
+        Map<String,String> keyColumnMappingData = new LinkedHashMap<>();
+        keyColumnMappingData.put("C1","C1");
+        keyColumnMappingData.put("C2","C2");
+
+        DataCompareUtil.getUniqueData(sourceDataMap,keyColumnMappingData);
+
+
+
+    }
+
+
 }
