@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Utility to compare the data sets based on the mapping provided
@@ -82,103 +83,95 @@ public class DataCompareUtil {
         return valueMismatch;
     }
 
-/*
-    public static void findDuplicateInStream(   Map<Integer, Map> sourceDataSet,Map<String,String> keyColumnMappingData,
-                                                           Stream<T> stream)
-    {
-        sourceDataSet.entrySet().stream()
-                .collect(
-                        Collectors.groupingBy(
-                                item ->
-                                {
-                                    StringBuffer value = new StringBuffer();
-                                    Map<String,CellItem> rowMap= (Map<String, CellItem>) item;
-                                    for(Map.Entry<String,CellItem> me :rowMap.entrySet())
-                                    {
-                                        if(keyColumnMappingData.containsKey(me.getKey()))
-                                        {
-                                            CellItem cellItem = me.getValue();
-                                            value.append(cellItem.getData());
-                                        }
-                                        CellItem cellItem = me.getValue();
-                                        value.append(cellItem.getData());
-                                    }
-                                   return value.toString();
-                                }
-                        ),Collectors.toList()
-                );
 
-    }
-  */
-
-    public static void findDuplicateInStream(   Map<Integer, Map> sourceDataSet,Map<String,String> keyColumnMappingData)
+    public static void populateDuplicateData(   Map<Integer, Map> dataSet,List<String> keyColumnList)
     {
-        Map<Integer, Map> uniqueDataSet = new LinkedHashMap<>();
-        sourceDataSet.entrySet()
-                .stream()
-                .collect(
-                        Collectors.groupingBy(item->getConcatenatedFieldValueFromItem(item.getValue(),keyColumnMappingData))
-                ).entrySet().stream()
-                .filter(item->checkItemForFilter(item,uniqueDataSet))
-                .forEach(x->logger.info("x:{}",x));
-        logger.info("uniqueDataSet:{}",uniqueDataSet);
         Map<Integer, Map> duplicateDataSet = new LinkedHashMap<>();
-        sourceDataSet.entrySet()
+        dataSet.entrySet()
                 .stream()
                 .collect(
-                        Collectors.groupingBy(item->getConcatenatedFieldValueFromItem(item.getValue(),keyColumnMappingData))
+                        Collectors.groupingBy(item->getConcatenatedFieldValueFromItem(item.getValue(),keyColumnList))
                 ).entrySet().stream()
-                .filter(item->!checkItemForFilter(item,duplicateDataSet))
-                .forEach(x->logger.info("x:{}",x));
+                .filter(item->addFilteredItemToDataSet(item,duplicateDataSet))
+                .count(); //Count is added only to invoke the operation;
+                //.forEach(x->logger.info("x:{}",x));
         logger.info("duplicateDataSet:{}",duplicateDataSet);
 
 
     }
 
-    public static void getUniqueData(   Map<Integer, Map> sourceDataSet,Map<String,String> keyColumnMappingData)
+    public static void getDuplicateData(   Map<Integer, Map> dataSet,List<String> keyColumnList)
     {
+        Stream<Map.Entry<String, List<Map.Entry<Integer, Map>>>> stream1 = dataSet.entrySet()
+                .stream()
+                .collect(
+                        Collectors.groupingBy(item->getConcatenatedFieldValueFromItem(item.getValue(),keyColumnList))
+                )
 
+                .entrySet().stream();
+        stream1.filter(me->
+                {
+                    boolean valid = false;
+                    List<?> value = me.getValue();
+                    if(value.size() > 1)
+                    {
+                        valid=true;
+                    }
+                    return valid;
+                }
 
+        )
+                .map(me->me.getValue())
+                .forEach(k->logger.info("k:{}",k));
 
-
+                /*
+                //.collect(Collectors.)
+                //.forEach(k->logger.info("k:{}",k.getClass()));
+                .forEach(me->logger.info("key:{}",me.getKey()));
+                /*
+                .map(x->
+                {
+                    Map.Entry<String, List<Map.Entry<Integer, Map>>> me = x;
+                    return me.getValue();
+                })
+                 */
+                //.forEach(k->logger.info("k:{}",k));
     }
 
-    private static boolean checkItemForFilter(Object itemObj,Map<Integer, Map> uniqueDataSet)
+    private static boolean addFilteredItemToDataSet(Object itemObj,Map<Integer, Map> dataSet)
     {
-       boolean validEntry = true;
        Map.Entry me = (Map.Entry) itemObj;
        String key = (String) me.getKey();
        List value = (List) me.getValue();
-
-       logger.info("key:{}",me.getKey());
-       if(!value.isEmpty() && value.size()>1)
+       boolean validEntry = false;
+       if(!value.isEmpty() && value.size()>1 )
        {
-           logger.info("Record with key :{} is invalid as item count is :{}",key,value.size());
+           logger.info("Record with key :{} is valid duplicate as item count is :{}",key,value.size());
+           validEntry =true;
+           Map.Entry<Integer,Map> recordEntry = (Map.Entry<Integer,Map>) value.get(0);
+           dataSet.put(recordEntry.getKey(), recordEntry.getValue());
        }
        else
        {
-           logger.info("Record with key :{} is valid ",key);
-           Map.Entry<Integer,Map> recordEntry = (Map.Entry<Integer,Map>) value.get(0);
-           uniqueDataSet.put(recordEntry.getKey(), recordEntry.getValue());
+           logger.info("Record with key :{} is invalid as item count is :{}",key,value.size());
        }
-       validEntry = false;
        return validEntry;
 
     }
 
-    private static String getConcatenatedFieldValueFromItem(Map<String,CellItem> rowMap,Map<String,String> keyColumnMappingData)
+    private static String getConcatenatedFieldValueFromItem(Map<String,CellItem> rowMap,List<String> keyColumnList)
     {
         String concatenatedKey = "";
         List<String> keyList = new ArrayList<>();
         for (Map.Entry<String, CellItem> entry : rowMap.entrySet()) {
-            logger.info(entry.getKey() + ":" + entry.getValue());
-            if(keyColumnMappingData.containsKey(entry.getKey()))
+            //logger.info(entry.getKey() + ":" + entry.getValue());
+            if(keyColumnList.contains(entry.getKey()))
             {
                 keyList.add(entry.getValue().getData());
             }
             else
             {
-                logger.warn("Ignoring column :{} as it is not part of key columns",entry.getKey());
+               // logger.warn("Ignoring column :{} as it is not part of key columns",entry.getKey());
             }
         }
         concatenatedKey = String.join("_",keyList);

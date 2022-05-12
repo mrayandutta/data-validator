@@ -13,16 +13,10 @@ import org.slf4j.LoggerFactory;
 public class Application {
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     public static void main(String[] args) {
-        //String inputFilePath = "./input-sample.xlsx";
+
         String inputFilePath = "./input-sample-100.xlsx";
         String outputFilePath = "./output.xlsx";
-        //String inputFilePath = "C://data-validator-test/input-sample.xlsx";
-        //String outputFilePath = "C://data-validator-test//output.xlsx";
-        //String mappingFilePath = "C://data-validator-test/mapping.xlsx";
-        //String outputFilePath = "C://data-validator-test/sample_highlighted.xlsx";
-        //String inputFilePath = "./sample.xlsx";
-        //String mappingFilePath = "./mapping.xlsx";
-        //String outputFilePath = "./sample_highlighted.xlsx";
+
         Workbook mappingWorkbook = ExcelUtil.getWorkbookFromExcel(inputFilePath);
         Sheet mappingSheet = ExcelUtil.getSheetFromWorkbook(mappingWorkbook,0);
         Map<String,String> mappingData = ExcelUtil.getMappingData(mappingSheet);
