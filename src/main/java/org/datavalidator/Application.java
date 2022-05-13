@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.datavalidator.util.DataCompareUtil;
 import org.datavalidator.util.ExcelUtil;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +56,18 @@ public class Application {
         DataCompareUtil.compareMappingColumnsWithSourceAndTarget(mappingSheet,sourceSheet,targetSheet);
 
         //DataCompareUtil.compare(sourceDataSet,targetDataSet,mappingData,workbook);
-        DataCompareUtil.compare(sourceUniqueDataSet,targetUniqueDataSet,mappingData,workbook);
-        ExcelUtil.saveWorkBookChanges(workbook,outputFilePath);
+        //DataCompareUtil.compare(sourceUniqueDataSet,targetUniqueDataSet,mappingData,workbook);
+        List errorList =DataCompareUtil.compareNew(sourceUniqueDataSet,targetDataSet,mappingData,keyColumnMappingData,workbook);
+        errorList.stream().forEach
+                (
+                   item->
+                   {
+                       Pair pairItem= (Pair) item;
+                       logger.info("Source Issue:{},Target Issue:{}",pairItem.getValue0(),pairItem.getValue1());
+                       //logger.info("Target Issue:{}",pairItem.getValue1());
+                   }
+                );
+        //ExcelUtil.saveWorkBookChanges(workbook,outputFilePath);
 
     }
 }

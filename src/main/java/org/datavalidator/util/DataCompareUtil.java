@@ -4,6 +4,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.datavalidator.model.CellItem;
+import org.javatuples.Pair;
+import org.javatuples.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,15 +20,12 @@ import java.util.stream.Stream;
  */
 public class DataCompareUtil {
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    public static void compareNew(Map<Integer, Map> sourceDataSet,Map<Integer,Map> targetDataSet,Map<String, String> mappingData,Map<String,String> keyColumnMappingData,Workbook workbook)
+    public static List compareNew(Map<Integer, Map> sourceDataSet,Map<Integer,Map> targetDataSet,Map<String, String> mappingData,Map<String,String> keyColumnMappingData,Workbook workbook)
     {
         List<String> keyColumnListForSource = new ArrayList<String>();
         keyColumnListForSource.addAll(keyColumnMappingData.keySet());
         List<String> keyColumnListForTarget = new ArrayList<String>();
         keyColumnListForTarget.addAll(keyColumnMappingData.values());
-
-        //List<String> sourceMappedColumnList = mappingData.keySet().stream().collect(Collectors.toList());
-        //List<String> targetMappedColumnList = mappingData.values().stream().collect(Collectors.toList());
 
         Stream<Map.Entry<String, List<Map.Entry<Integer, Map>>>> sourceStream = sourceDataSet.entrySet()
                 .stream()
@@ -46,25 +45,32 @@ public class DataCompareUtil {
         //logger.info("sourceDataMap:{}",sourceDataMap);
         //logger.info("targetDataMap:{}",targetDataMap);
 
-        sourceDataMap.entrySet().stream().filter(item->targetDataMap.containsKey(item.getKey()))
-                .forEach(sourceItem->
-                {
-                    List<Map.Entry<Integer, Map>> sourceRecord = sourceItem.getValue();
-                    List<Map.Entry<Integer, Map>> targetRecord = targetDataMap.get(sourceItem.getKey());
-                    //logger.info("sourceRecord:{}",sourceRecord);
-                    //logger.info("targetRecord:{}",targetRecord);
-                    validateMappedColumns(sourceRecord,targetRecord,mappingData);
+        List errorList = sourceDataMap.entrySet().stream().
+                filter(item->targetDataMap.containsKey(item.getKey()))
+                .map(sourceItem->
+                        {
+                            List<Map.Entry<Integer, Map>> sourceRecord = sourceItem.getValue();
+                            List<Map.Entry<Integer, Map>> targetRecord = targetDataMap.get(sourceItem.getKey());
+                            return validateMappedColumns(sourceRecord,targetRecord,mappingData);
+                        }
+                        ).collect(Collectors.toList());
 
-                }
-                );
-
-
+        logger.info("errorList:{}",errorList);
+        return errorList;
     }
 
-    public static void validateMappedColumns(List<Map.Entry<Integer, Map>> sourceRecord ,List<Map.Entry<Integer, Map>> targetRecord,Map<String, String> mappingData)
+    //public static Pair<Integer,List<String>> validateMappedColumns(List<Map.Entry<Integer, Map>> sourceRecord ,List<Map.Entry<Integer, Map>> targetRecord,Map<String, String> mappingData)
+    public static Pair validateMappedColumns(List<Map.Entry<Integer, Map>> sourceRecord ,List<Map.Entry<Integer, Map>> targetRecord,Map<String, String> mappingData)
     {
-        AtomicReference<Integer> rowNumber=new AtomicReference<>();
-        List<String> misMatchedColumns = new ArrayList<>();
+        Pair<Integer,List<String>> sourceMisMatchRowColumnListPair = null;
+        Pair<Integer,List<String>> targetMisMatchRowColumnListPair = null;
+
+        AtomicReference<Integer> sourceRowNumber=new AtomicReference<>();
+        AtomicReference<Integer> targetRowNumber=new AtomicReference<>();
+
+        List<String> sourceMisMatchedColumns = new ArrayList<>();
+        List<String> targetMisMatchedColumns = new ArrayList<>();
+
         mappingData.forEach((sourceColumnName, targetColumnName) ->
         {
             Map<String,CellItem> sourceRecordMap = sourceRecord.get(0).getValue();
@@ -82,14 +88,27 @@ public class DataCompareUtil {
                 else
                 {
                     //logger.error("Data Mismatch for source row :{},column:{}",sourceRecord.get(0).getKey(),sourceColumnName);
-                    rowNumber.set(sourceRecord.get(0).getKey());
+                    sourceRowNumber.set(sourceRecord.get(0).getKey());
+                    targetRowNumber.set(targetRecord.get(0).getKey());
                     //logger.error("misMatchedColumns :{},sourceColumnName:{}",misMatchedColumns,sourceColumnName);
-                    misMatchedColumns.add(sourceColumnName);
+                    sourceMisMatchedColumns.add(sourceColumnName);
+                    targetMisMatchedColumns.add(targetColumnName);
                 }
             }
 
         });
-        logger.info("Problem with Row:{},columns are :{}",rowNumber,misMatchedColumns);
+        if(!sourceMisMatchedColumns.isEmpty())
+        {
+            //logger.info("Problem with Row:{},columns are :{}",rowNumber,misMatchedColumns);
+            sourceMisMatchRowColumnListPair = new Pair<>(sourceRowNumber.get(),sourceMisMatchedColumns);
+        }
+        if(!targetMisMatchedColumns.isEmpty())
+        {
+            //logger.info("Problem with Row:{},columns are :{}",rowNumber,misMatchedColumns);
+            targetMisMatchRowColumnListPair = new Pair<>(targetRowNumber.get(),targetMisMatchedColumns);
+        }
+        //logger.info("Problem with Row:{},columns are :{}",rowNumber,misMatchedColumns);
+        return new Pair<>(sourceMisMatchRowColumnListPair,targetMisMatchRowColumnListPair);
 
     }
 
