@@ -1,6 +1,7 @@
 package org.datavalidator.util;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCreationHelper;
 import org.datavalidator.model.CellItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,6 +112,32 @@ public class ExcelUtil {
 
     }
 
+    public static Map<String,String> getKeyColumnMappingData(Sheet sheet)
+    {
+        Map<String,String> keyColumnMap = new LinkedHashMap<>();
+        List<Integer> keyColumnIndexList = new ArrayList<>();
+        Row firstRow = sheet.getRow(0);
+        Row sourceMappingRow = sheet.getRow(1);
+        Row targetMappingRow = sheet.getRow(2);
+        DataFormatter dataFormatter = new DataFormatter();
+        //int numberOfColumns = firstRow.getPhysicalNumberOfCells();
+        int numberOfColumns = firstRow.getLastCellNum();
+        for (int i = 0; i < numberOfColumns; i++) {
+            Cell cell = firstRow.getCell(i);
+            String cellValue = dataFormatter.formatCellValue(cell);
+            if("Y".equalsIgnoreCase(cellValue))
+            {
+                keyColumnIndexList.add(i) ;
+                Cell sourceCell = sourceMappingRow.getCell(i);
+                Cell targetCell = targetMappingRow.getCell(i);
+                keyColumnMap.put(dataFormatter.formatCellValue(sourceCell),dataFormatter.formatCellValue(targetCell));
+
+            }
+
+        }
+        return keyColumnMap;
+    }
+
     public static Map<String,String> getMappingData(Sheet sheet)
     {
         Map<String,String> sourceTargetMap = new LinkedHashMap<>();
@@ -188,6 +215,22 @@ public class ExcelUtil {
         headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         cell.setCellStyle(headerCellStyle);
 
+    }
+
+    public static void addCommentToCell(Workbook workbook,int sheetNumber,Cell cell,String commentText)
+    {
+        Sheet sheet = workbook.getSheetAt(sheetNumber);
+        Drawing<Shape> drawing = (Drawing<Shape>) sheet.createDrawingPatriarch();
+        ClientAnchor clientAnchor = drawing.createAnchor(0, 0, 0, 0, 0, 2, 7, 12);
+
+        Comment comment = (Comment) drawing.createCellComment(clientAnchor);
+        CreationHelper creationHelper = (XSSFCreationHelper) workbook.getCreationHelper();
+        RichTextString richTextString = creationHelper.createRichTextString(commentText);
+
+        comment.setString(richTextString);
+        comment.setAuthor("DataValidator");
+
+        cell.setCellComment(comment);
     }
 
     public static void saveWorkBookChanges(Workbook workbook,String filePath)
