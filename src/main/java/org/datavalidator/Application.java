@@ -1,6 +1,8 @@
 package org.datavalidator;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Sheet;
@@ -14,7 +16,8 @@ public class Application {
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     public static void main(String[] args) {
 
-        String inputFilePath = "./input-sample-100.xlsx";
+        //String inputFilePath = "./input-sample-100.xlsx";
+        String inputFilePath = "./input-sample.xlsx";
         String outputFilePath = "./output.xlsx";
 
         Workbook mappingWorkbook = ExcelUtil.getWorkbookFromExcel(inputFilePath);
@@ -30,13 +33,29 @@ public class Application {
         Map<Integer, Map> sourceDataSet = ExcelUtil.getDataFromSheet(sourceSheet);
         logger.info("sourceDataSet:{}",sourceDataSet);
 
+        List<String> keyColumnListForSource = new ArrayList<String>();
+        keyColumnListForSource.addAll(keyColumnMappingData.keySet());
+        Map<Integer, Map> sourceDuplicateDataSet = DataCompareUtil.getDuplicateDataSet(sourceDataSet,keyColumnListForSource);
+        logger.info("sourceDuplicateDataSet:{}",sourceDuplicateDataSet);
+        Map<Integer, Map> sourceUniqueDataSet = DataCompareUtil.getUniqueDataSet(sourceDataSet,sourceDuplicateDataSet);
+        logger.info("sourceUniqueDataSet:{}",sourceUniqueDataSet);
+
         Sheet targetSheet = ExcelUtil.getSheetFromWorkbook(workbook,2);
         Map<Integer, Map> targetDataSet = ExcelUtil.getDataFromSheet(targetSheet);
         logger.info("targetDataSet:{}",targetDataSet);
 
+        List<String> keyColumnListForTarget = new ArrayList<String>();
+        keyColumnListForTarget.addAll(keyColumnMappingData.values());
+        Map<Integer, Map> targetDuplicateDataSet = DataCompareUtil.getDuplicateDataSet(targetDataSet,keyColumnListForTarget);
+        logger.info("targetDuplicateDataSet:{}",targetDuplicateDataSet);
+        Map<Integer, Map> targetUniqueDataSet = DataCompareUtil.getUniqueDataSet(targetDataSet,targetDuplicateDataSet);
+        logger.info("targetUniqueDataSet:{}",targetUniqueDataSet);
+
+        //This is for header check
         DataCompareUtil.compareMappingColumnsWithSourceAndTarget(mappingSheet,sourceSheet,targetSheet);
 
-        DataCompareUtil.compare(sourceDataSet,targetDataSet,mappingData,workbook);
+        //DataCompareUtil.compare(sourceDataSet,targetDataSet,mappingData,workbook);
+        DataCompareUtil.compare(sourceUniqueDataSet,targetUniqueDataSet,mappingData,workbook);
         ExcelUtil.saveWorkBookChanges(workbook,outputFilePath);
 
     }

@@ -17,6 +17,45 @@ import java.util.stream.Stream;
  */
 public class DataCompareUtil {
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    public static void compareNew(Map<Integer, Map> sourceDataSet,Map<Integer,Map> targetDataSet,Map<String, String> mappingData,Map<String,String> keyColumnMappingData,Workbook workbook)
+    {
+        List<String> keyColumnListForSource = new ArrayList<String>();
+        keyColumnListForSource.addAll(keyColumnMappingData.keySet());
+
+        Stream<Map.Entry<String, List<Map.Entry<Integer, Map>>>> sourceStream = sourceDataSet.entrySet()
+                .stream()
+                .collect(
+                        Collectors.groupingBy(item->getConcatenatedFieldValueFromItem(item.getValue(),keyColumnListForSource))
+                ).entrySet().stream();
+        Map<String, List<Map.Entry<Integer, Map>>> sourceDataMap = sourceStream.collect(Collectors.toMap(x->x.getKey(),x->x.getValue()));
+
+        List<String> keyColumnListForTarget = new ArrayList<String>();
+        keyColumnListForTarget.addAll(keyColumnMappingData.values());
+
+        Stream<Map.Entry<String, List<Map.Entry<Integer, Map>>>> targetStream =
+                targetDataSet.entrySet()
+                .stream()
+                .collect(
+                        Collectors.groupingBy(item->getConcatenatedFieldValueFromItem(item.getValue(),keyColumnListForTarget))
+                ).entrySet().stream();
+        Map<String, List<Map.Entry<Integer, Map>>> targetDataMap = targetStream.collect(Collectors.toMap(x->x.getKey(),x->x.getValue()));
+        logger.info("sourceDataMap:{}",sourceDataMap);
+        logger.info("targetDataMap:{}",targetDataMap);
+
+        sourceDataMap.entrySet().stream().filter(item->targetDataMap.containsKey(item.getKey()))
+                .forEach(sourceItem->
+                {
+                    List<Map.Entry<Integer, Map>> sourceRecord = sourceItem.getValue();
+                    List<Map.Entry<Integer, Map>> targetRecord = targetDataMap.get(sourceItem.getKey());
+                    logger.info("sourceRecord:{}",sourceRecord);
+                    logger.info("targetRecord:{}",targetRecord);
+
+                }
+                );
+
+
+    }
+
     public static void compare(Map<Integer, Map> sourceDataSet,Map<Integer,Map> targetDataSet,Map<String, String> mappingData,Workbook workbook)
     {
         sourceDataSet.entrySet().stream()
@@ -28,7 +67,6 @@ public class DataCompareUtil {
                         }
                 );
     }
-
     public static void compareLists(List<String> mappingColumns,List<String> actualColumns)
     {
         List<String> missingColumnInActual = mappingColumns.stream()
@@ -106,7 +144,7 @@ public class DataCompareUtil {
         dataSet.entrySet().stream()
                 .filter(item -> !duplicateDataSet.containsKey(item.getKey()))
                 .collect(Collectors.toMap(item->item.getKey(),item->item.getValue()));
-        logger.info("uniqueDataSet:{}",uniqueDataSet);
+        //logger.info("uniqueDataSet:{}",uniqueDataSet);
         return uniqueDataSet;
     }
 
@@ -135,7 +173,7 @@ public class DataCompareUtil {
                 .map(me-> me.getValue())
                 .flatMap(List::stream)
                 .collect(Collectors.toMap(me->me.getKey(),me->me.getValue()));
-        logger.info("duplicateDataSet:{}",duplicateDataSet);
+        //logger.info("duplicateDataSet:{}",duplicateDataSet);
         return duplicateDataSet;
     }
 
