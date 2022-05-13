@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,6 +22,11 @@ public class DataCompareUtil {
     {
         List<String> keyColumnListForSource = new ArrayList<String>();
         keyColumnListForSource.addAll(keyColumnMappingData.keySet());
+        List<String> keyColumnListForTarget = new ArrayList<String>();
+        keyColumnListForTarget.addAll(keyColumnMappingData.values());
+
+        //List<String> sourceMappedColumnList = mappingData.keySet().stream().collect(Collectors.toList());
+        //List<String> targetMappedColumnList = mappingData.values().stream().collect(Collectors.toList());
 
         Stream<Map.Entry<String, List<Map.Entry<Integer, Map>>>> sourceStream = sourceDataSet.entrySet()
                 .stream()
@@ -29,8 +35,6 @@ public class DataCompareUtil {
                 ).entrySet().stream();
         Map<String, List<Map.Entry<Integer, Map>>> sourceDataMap = sourceStream.collect(Collectors.toMap(x->x.getKey(),x->x.getValue()));
 
-        List<String> keyColumnListForTarget = new ArrayList<String>();
-        keyColumnListForTarget.addAll(keyColumnMappingData.values());
 
         Stream<Map.Entry<String, List<Map.Entry<Integer, Map>>>> targetStream =
                 targetDataSet.entrySet()
@@ -39,20 +43,53 @@ public class DataCompareUtil {
                         Collectors.groupingBy(item->getConcatenatedFieldValueFromItem(item.getValue(),keyColumnListForTarget))
                 ).entrySet().stream();
         Map<String, List<Map.Entry<Integer, Map>>> targetDataMap = targetStream.collect(Collectors.toMap(x->x.getKey(),x->x.getValue()));
-        logger.info("sourceDataMap:{}",sourceDataMap);
-        logger.info("targetDataMap:{}",targetDataMap);
+        //logger.info("sourceDataMap:{}",sourceDataMap);
+        //logger.info("targetDataMap:{}",targetDataMap);
 
         sourceDataMap.entrySet().stream().filter(item->targetDataMap.containsKey(item.getKey()))
                 .forEach(sourceItem->
                 {
                     List<Map.Entry<Integer, Map>> sourceRecord = sourceItem.getValue();
                     List<Map.Entry<Integer, Map>> targetRecord = targetDataMap.get(sourceItem.getKey());
-                    logger.info("sourceRecord:{}",sourceRecord);
-                    logger.info("targetRecord:{}",targetRecord);
+                    //logger.info("sourceRecord:{}",sourceRecord);
+                    //logger.info("targetRecord:{}",targetRecord);
+                    validateMappedColumns(sourceRecord,targetRecord,mappingData);
 
                 }
                 );
 
+
+    }
+
+    public static void validateMappedColumns(List<Map.Entry<Integer, Map>> sourceRecord ,List<Map.Entry<Integer, Map>> targetRecord,Map<String, String> mappingData)
+    {
+        AtomicReference<Integer> rowNumber=new AtomicReference<>();
+        List<String> misMatchedColumns = new ArrayList<>();
+        mappingData.forEach((sourceColumnName, targetColumnName) ->
+        {
+            Map<String,CellItem> sourceRecordMap = sourceRecord.get(0).getValue();
+            Map<String,CellItem> targetRecordMap = targetRecord.get(0).getValue();
+
+            CellItem sourceCellItem = sourceRecordMap.get(sourceColumnName);
+            CellItem targetCellItem = targetRecordMap.get(targetColumnName);
+            boolean isDataNotNull = sourceCellItem!=null && targetCellItem!=null;
+            if(isDataNotNull)
+            {
+                if(sourceCellItem.getData().equalsIgnoreCase(targetCellItem.getData()))
+                {
+                    //logger.info("Data Matched for source row :{},column:{}",sourceRecord.get(0).getKey(),sourceColumnName);
+                }
+                else
+                {
+                    //logger.error("Data Mismatch for source row :{},column:{}",sourceRecord.get(0).getKey(),sourceColumnName);
+                    rowNumber.set(sourceRecord.get(0).getKey());
+                    //logger.error("misMatchedColumns :{},sourceColumnName:{}",misMatchedColumns,sourceColumnName);
+                    misMatchedColumns.add(sourceColumnName);
+                }
+            }
+
+        });
+        logger.info("Problem with Row:{},columns are :{}",rowNumber,misMatchedColumns);
 
     }
 

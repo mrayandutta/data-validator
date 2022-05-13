@@ -176,11 +176,13 @@ public class DataCompareUtilTest {
         sourceRowMap1.put("C1",new CellItem("A",1,null));
         sourceRowMap1.put("C2",new CellItem("B",1,null));
         sourceRowMap1.put("C3",new CellItem("C",1,null));
+        sourceRowMap1.put("C4",new CellItem("C4Source",1,null));
 
         Map<String, CellItem> targetRowMap1 = new LinkedHashMap<>();
         targetRowMap1.put("C1",new CellItem("A",1,null));
         targetRowMap1.put("C2",new CellItem("B",1,null));
         targetRowMap1.put("C3",new CellItem("C1",1,null));
+        targetRowMap1.put("C4",new CellItem("C4Target",1,null));
 
         Map<String, CellItem> sourceRowMap2 = new LinkedHashMap<>();
         sourceRowMap2.put("C1",new CellItem("P",2,null));
@@ -195,11 +197,11 @@ public class DataCompareUtilTest {
         Map<String, CellItem> targetRowMap2 = new LinkedHashMap<>();
         targetRowMap2.put("C1",new CellItem("P",2,null));
         targetRowMap2.put("C2",new CellItem("Q",2,null));
-        targetRowMap2.put("C3",new CellItem("R",2,null));
+        targetRowMap2.put("C3",new CellItem("R1",2,null));
 
         Map<String, CellItem> targetRowMap3 = new LinkedHashMap<>();
         targetRowMap3.put("C1",new CellItem("X1",3,null));
-        targetRowMap3.put("C2",new CellItem("Y",3,null));
+        targetRowMap3.put("C2",new CellItem("Y2",3,null));
         targetRowMap3.put("C3",new CellItem("Z",3,null));
 
         Map<Integer, Map> sourceDataMap = new LinkedHashMap<>();
@@ -224,6 +226,7 @@ public class DataCompareUtilTest {
         mappingData.put("C1","C1");
         mappingData.put("C2","C2");
         mappingData.put("C3","C3");
+        mappingData.put("C4","C4");
 
         Map<String,String> keyColumnMappingData = new LinkedHashMap<>();
         keyColumnMappingData.put("C1","C1");
