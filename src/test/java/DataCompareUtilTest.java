@@ -215,13 +215,6 @@ public class DataCompareUtilTest {
         targetDataMap.put(2,targetRowMap2);
         targetDataMap.put(3,targetRowMap3);
 
-
-
-        Workbook mockWorkbook = mock(Workbook.class);
-        CellStyle mockCellStyle = mock(CellStyle.class);
-        Cell mockCell = mock(Cell.class);
-        when(mockWorkbook.createCellStyle()).thenReturn(mockCellStyle);
-
         Map<String, String> mappingData = new LinkedHashMap<>();
         mappingData.put("C1","C1");
         mappingData.put("C2","C2");
@@ -232,7 +225,7 @@ public class DataCompareUtilTest {
         keyColumnMappingData.put("C1","C1");
         keyColumnMappingData.put("C2","C2");
 
-        DataCompareUtil.compareNew(sourceDataMap,targetDataMap,mappingData,keyColumnMappingData,mockWorkbook);
+        DataCompareUtil.compareNew(sourceDataMap,targetDataMap,mappingData,keyColumnMappingData);
 
     }
 

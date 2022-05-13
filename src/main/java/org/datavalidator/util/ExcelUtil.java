@@ -29,7 +29,7 @@ public class ExcelUtil {
         {
             logger.error("Error while trying to get workbook from filePath*:{}",filePath);
             logger.error("Exception details :{}",e);
-            //e.printStackTrace();
+            e.printStackTrace();
         }
         return workbook;
     }

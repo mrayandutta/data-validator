@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.datavalidator.util.DataCompareUtil;
 import org.datavalidator.util.ExcelUtil;
+import org.datavalidator.util.ValidationUtil;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,18 +22,15 @@ public class Application {
         String inputFilePath = "./input-sample.xlsx";
         String outputFilePath = "./output.xlsx";
 
-        Workbook mappingWorkbook = ExcelUtil.getWorkbookFromExcel(inputFilePath);
-        Sheet mappingSheet = ExcelUtil.getSheetFromWorkbook(mappingWorkbook,0);
-        Map<String,String> mappingData = ExcelUtil.getMappingData(mappingSheet);
+        Pair<Map<String,String>,Map<String,String>> mappingAndKeyColumnMappingPair = ValidationUtil.getMappingAndKeyColumnMappingPair(inputFilePath,0);
+        Map<String,String> mappingData = mappingAndKeyColumnMappingPair.getValue0();
         logger.info("mappingData:{}",mappingData);
 
-        Map<String,String> keyColumnMappingData = ExcelUtil.getKeyColumnMappingData(mappingSheet);
+        Map<String,String> keyColumnMappingData = mappingAndKeyColumnMappingPair.getValue1();
         logger.info("keyColumnMappingData:{}",keyColumnMappingData);
 
-        Workbook workbook = ExcelUtil.getWorkbookFromExcel(inputFilePath);
-        Sheet sourceSheet = ExcelUtil.getSheetFromWorkbook(workbook,1);
-        Map<Integer, Map> sourceDataSet = ExcelUtil.getDataFromSheet(sourceSheet);
-        logger.info("sourceDataSet:{}",sourceDataSet);
+        Map<Integer, Map> sourceDataSet = ValidationUtil.getDataSetFromSheet(inputFilePath,1);
+        Map<Integer, Map> targetDataSet = ValidationUtil.getDataSetFromSheet(inputFilePath,2);
 
         List<String> keyColumnListForSource = new ArrayList<String>();
         keyColumnListForSource.addAll(keyColumnMappingData.keySet());
@@ -41,9 +39,6 @@ public class Application {
         Map<Integer, Map> sourceUniqueDataSet = DataCompareUtil.getUniqueDataSet(sourceDataSet,sourceDuplicateDataSet);
         logger.info("sourceUniqueDataSet:{}",sourceUniqueDataSet);
 
-        Sheet targetSheet = ExcelUtil.getSheetFromWorkbook(workbook,2);
-        Map<Integer, Map> targetDataSet = ExcelUtil.getDataFromSheet(targetSheet);
-        logger.info("targetDataSet:{}",targetDataSet);
 
         List<String> keyColumnListForTarget = new ArrayList<String>();
         keyColumnListForTarget.addAll(keyColumnMappingData.values());
@@ -52,22 +47,8 @@ public class Application {
         Map<Integer, Map> targetUniqueDataSet = DataCompareUtil.getUniqueDataSet(targetDataSet,targetDuplicateDataSet);
         logger.info("targetUniqueDataSet:{}",targetUniqueDataSet);
 
-        //This is for header check
-        DataCompareUtil.compareMappingColumnsWithSourceAndTarget(mappingSheet,sourceSheet,targetSheet);
-
-        //DataCompareUtil.compare(sourceDataSet,targetDataSet,mappingData,workbook);
-        //DataCompareUtil.compare(sourceUniqueDataSet,targetUniqueDataSet,mappingData,workbook);
-        List errorList =DataCompareUtil.compareNew(sourceUniqueDataSet,targetDataSet,mappingData,keyColumnMappingData,workbook);
-        errorList.stream().forEach
-                (
-                   item->
-                   {
-                       Pair pairItem= (Pair) item;
-                       logger.info("Source Issue:{},Target Issue:{}",pairItem.getValue0(),pairItem.getValue1());
-                       //logger.info("Target Issue:{}",pairItem.getValue1());
-                   }
-                );
-        //ExcelUtil.saveWorkBookChanges(workbook,outputFilePath);
+        ValidationUtil.printDataDuplicationDetails(sourceDuplicateDataSet,targetDuplicateDataSet);
+        ValidationUtil.printDataMisMatchDetails(sourceUniqueDataSet,targetUniqueDataSet,mappingData,keyColumnMappingData);
 
     }
 }

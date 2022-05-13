@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  */
 public class DataCompareUtil {
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    public static List compareNew(Map<Integer, Map> sourceDataSet,Map<Integer,Map> targetDataSet,Map<String, String> mappingData,Map<String,String> keyColumnMappingData,Workbook workbook)
+    public static List compareNew(Map<Integer, Map> sourceDataSet,Map<Integer,Map> targetDataSet,Map<String, String> mappingData,Map<String,String> keyColumnMappingData)
     {
         List<String> keyColumnListForSource = new ArrayList<String>();
         keyColumnListForSource.addAll(keyColumnMappingData.keySet());
@@ -55,7 +55,7 @@ public class DataCompareUtil {
                         }
                         ).collect(Collectors.toList());
 
-        logger.info("errorList:{}",errorList);
+        //logger.info("errorList:{}",errorList);
         return errorList;
     }
 
