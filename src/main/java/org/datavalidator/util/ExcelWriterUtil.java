@@ -72,4 +72,35 @@ public class ExcelWriterUtil {
         }
     }
 
+    public static void writeDataDuplicationDetails(String sheetName, Map<Integer, Map> duplicateDataSet,String outputFilePath)  {
+        logger.info("duplicateDataSet :{}",duplicateDataSet);
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet(sheetName);
+        int rowCount = 0;
+        Row headerRow = sheet.createRow(rowCount);
+        Cell headerCell1 = headerRow.createCell(0);
+        headerCell1.setCellValue("Source Row Number ");
+        rowCount++;
+
+
+        for (Map.Entry me : duplicateDataSet.entrySet())
+        {
+            Row row = sheet.createRow(rowCount);
+            rowCount++;
+            Cell cell1 = row.createCell(0);
+            Integer rowNumber = (Integer) me.getKey();
+            cell1.setCellValue(rowNumber.toString());
+        }
+
+        try {
+            FileOutputStream outputStream = new FileOutputStream(outputFilePath);
+            workbook.write(outputStream);
+            workbook.close();
+
+        }catch (Exception exception)
+        {
+            logger.error("Error occurred while trying to write file:{} ,exception details:{}",outputFilePath,exception);
+        }
+    }
+
 }

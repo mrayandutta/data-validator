@@ -34,6 +34,7 @@ public class ValidationUtil {
     public static void printDataDuplicationDetails(Map<Integer, Map> sourceDuplicateDataSet,Map<Integer, Map> targetDuplicateDataSet)
     {
         logger.error("-------------------------------------- Printing Data Duplication Issue Start ---------------------------------");
+        ExcelWriterUtil.writeDataDuplicationDetails("Source Data Duplicates ",sourceDuplicateDataSet,"duplicate-error-output.xlsx");
 
         logger.error("-------------------------------------- Printing Data Duplication Issue End ---------------------------------");
     }
@@ -51,7 +52,7 @@ public class ValidationUtil {
                             //logger.info("Target Issue:{}",pairItem.getValue1());
                         }
                 );
-        ExcelWriterUtil.writeDataMisMatchDetails("Data Mismatch ",errorList,"error-output.xlsx");
+        ExcelWriterUtil.writeDataMisMatchDetails("Data Mismatch ",errorList,"datamismatch-error-output.xlsx");
         logger.error("-------------------------------------- Printing Data Mismatch Issue End ---------------------------------");
     }
     public static void printDataDuplicationDetails()
