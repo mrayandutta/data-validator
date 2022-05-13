@@ -100,15 +100,25 @@ public class DataCompareUtil {
 
     }
 
-    public static void getDuplicateData(   Map<Integer, Map> dataSet,List<String> keyColumnList)
+    public static Map<Integer, Map> getUniqueDataSet(   Map<Integer, Map> dataSet,Map<Integer, Map> duplicateDataSet)
+    {
+        Map<Integer, Map> uniqueDataSet =
+        dataSet.entrySet().stream()
+                .filter(item -> !duplicateDataSet.containsKey(item.getKey()))
+                .collect(Collectors.toMap(item->item.getKey(),item->item.getValue()));
+        logger.info("uniqueDataSet:{}",uniqueDataSet);
+        return uniqueDataSet;
+    }
+
+    public static Map<Integer, Map> getDuplicateDataSet(   Map<Integer, Map> dataSet,List<String> keyColumnList)
     {
         Stream<Map.Entry<String, List<Map.Entry<Integer, Map>>>> stream1 = dataSet.entrySet()
                 .stream()
                 .collect(
                         Collectors.groupingBy(item->getConcatenatedFieldValueFromItem(item.getValue(),keyColumnList))
                 )
-
                 .entrySet().stream();
+        Map<Integer, Map> duplicateDataSet =
         stream1.filter(me->
                 {
                     boolean valid = false;
@@ -121,21 +131,12 @@ public class DataCompareUtil {
                 }
 
         )
-                .map(me->me.getValue())
-                .forEach(k->logger.info("k:{}",k));
 
-                /*
-                //.collect(Collectors.)
-                //.forEach(k->logger.info("k:{}",k.getClass()));
-                .forEach(me->logger.info("key:{}",me.getKey()));
-                /*
-                .map(x->
-                {
-                    Map.Entry<String, List<Map.Entry<Integer, Map>>> me = x;
-                    return me.getValue();
-                })
-                 */
-                //.forEach(k->logger.info("k:{}",k));
+                .map(me-> me.getValue())
+                .flatMap(List::stream)
+                .collect(Collectors.toMap(me->me.getKey(),me->me.getValue()));
+        logger.info("duplicateDataSet:{}",duplicateDataSet);
+        return duplicateDataSet;
     }
 
     private static boolean addFilteredItemToDataSet(Object itemObj,Map<Integer, Map> dataSet)

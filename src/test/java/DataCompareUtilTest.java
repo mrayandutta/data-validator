@@ -162,7 +162,8 @@ public class DataCompareUtilTest {
 
         //DataCompareUtil.populateUniqueData(sourceDataMap,keyColumnListForSource);
         //DataCompareUtil.populateDuplicateData(sourceDataMap,keyColumnListForSource);
-        DataCompareUtil.getDuplicateData(sourceDataMap,keyColumnListForSource);
+        Map<Integer, Map> duplicateDataSet = DataCompareUtil.getDuplicateDataSet(sourceDataMap,keyColumnListForSource);
+        Map<Integer, Map> uniqueDataSet = DataCompareUtil.getUniqueDataSet(sourceDataMap,duplicateDataSet);
 
 
 
