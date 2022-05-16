@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.datavalidator.util.DataCompareUtil;
 import org.datavalidator.util.ExcelUtil;
+import org.datavalidator.util.ExcelWriterUtil;
 import org.datavalidator.util.ValidationUtil;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -47,8 +48,11 @@ public class Application {
         Map<Integer, Map> targetUniqueDataSet = DataCompareUtil.getUniqueDataSet(targetDataSet,targetDuplicateDataSet);
         logger.info("targetUniqueDataSet:{}",targetUniqueDataSet);
 
-        ValidationUtil.printDataDuplicationDetails(sourceDuplicateDataSet,targetDuplicateDataSet);
-        ValidationUtil.printDataMisMatchDetails(sourceUniqueDataSet,targetUniqueDataSet,mappingData,keyColumnMappingData);
+        //ValidationUtil.printDataDuplicationDetails(sourceDuplicateDataSet,targetDuplicateDataSet);
+        //ValidationUtil.printDataMisMatchDetails(sourceUniqueDataSet,targetUniqueDataSet,mappingData,keyColumnMappingData);
+
+        //ExcelWriterUtil.writeAllErrorDetails(sourceDuplicateDataSet);
+        ValidationUtil.printAllErrorDetails("Data Mismatch","Data Duplication",sourceDuplicateDataSet,sourceUniqueDataSet,targetUniqueDataSet,mappingData,keyColumnMappingData,outputFilePath);
 
     }
 }

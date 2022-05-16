@@ -21,9 +21,27 @@ import java.util.Map;
 public class ExcelWriterUtil {
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    public static void writeDataMisMatchDetails(String sheetName, List<Pair> errorList,String outputFilePath)  {
-        logger.info("errorList :{}",errorList);
+    public static void writeAllErrorDetails(String dataMismatchSheetName, List<Pair> errorList,String dataDuplicateSheetName, Map<Integer, Map> duplicateDataSet,String outputFilePath)
+    {
         XSSFWorkbook workbook = new XSSFWorkbook();
+        writeDataDuplicationDetails(dataDuplicateSheetName,duplicateDataSet,workbook);
+        writeDataMisMatchDetails(dataMismatchSheetName,errorList,workbook);
+
+        try {
+            FileOutputStream outputStream = new FileOutputStream(outputFilePath);
+            workbook.write(outputStream);
+            workbook.close();
+
+        }catch (Exception exception)
+        {
+            logger.error("Error occurred while trying to write file:{} ,exception details:{}",outputFilePath,exception);
+        }
+
+    }
+
+    public static void writeDataMisMatchDetails(String sheetName, List<Pair> errorList,XSSFWorkbook workbook)  {
+        logger.info("errorList :{}",errorList);
+        //XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet(sheetName);
         int rowCount = 0;
         Row headerRow = sheet.createRow(rowCount);
@@ -61,6 +79,7 @@ public class ExcelWriterUtil {
             Cell cell4 = row.createCell(columnCount++);
             cell4.setCellValue(String.join(",",targetErrorColumnList));
         }
+        /*
         try {
             FileOutputStream outputStream = new FileOutputStream(outputFilePath);
             workbook.write(outputStream);
@@ -70,11 +89,13 @@ public class ExcelWriterUtil {
         {
             logger.error("Error occurred while trying to write file:{} ,exception details:{}",outputFilePath,exception);
         }
+
+         */
     }
 
-    public static void writeDataDuplicationDetails(String sheetName, Map<Integer, Map> duplicateDataSet,String outputFilePath)  {
+    public static void writeDataDuplicationDetails(String sheetName, Map<Integer, Map> duplicateDataSet,XSSFWorkbook workbook)  {
         logger.info("duplicateDataSet :{}",duplicateDataSet);
-        XSSFWorkbook workbook = new XSSFWorkbook();
+        //XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet(sheetName);
         int rowCount = 0;
         Row headerRow = sheet.createRow(rowCount);
@@ -91,7 +112,7 @@ public class ExcelWriterUtil {
             Integer rowNumber = (Integer) me.getKey();
             cell1.setCellValue(rowNumber.toString());
         }
-
+        /*
         try {
             FileOutputStream outputStream = new FileOutputStream(outputFilePath);
             workbook.write(outputStream);
@@ -101,6 +122,8 @@ public class ExcelWriterUtil {
         {
             logger.error("Error occurred while trying to write file:{} ,exception details:{}",outputFilePath,exception);
         }
+
+         */
     }
 
 }

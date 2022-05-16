@@ -34,7 +34,7 @@ public class ValidationUtil {
     public static void printDataDuplicationDetails(Map<Integer, Map> sourceDuplicateDataSet,Map<Integer, Map> targetDuplicateDataSet)
     {
         logger.error("-------------------------------------- Printing Data Duplication Issue Start ---------------------------------");
-        ExcelWriterUtil.writeDataDuplicationDetails("Source Data Duplicates ",sourceDuplicateDataSet,"duplicate-error-output.xlsx");
+        //ExcelWriterUtil.writeDataDuplicationDetails("Source Data Duplicates ",sourceDuplicateDataSet,"duplicate-error-output.xlsx");
 
         logger.error("-------------------------------------- Printing Data Duplication Issue End ---------------------------------");
     }
@@ -42,6 +42,7 @@ public class ValidationUtil {
     public static void printDataMisMatchDetails(Map<Integer, Map> sourceUniqueDataSet,Map<Integer, Map> targetUniqueDataSet,Map<String,String> mappingData,Map<String,String> keyColumnMappingData)
     {
         logger.error("-------------------------------------- Printing Data Mismatch Issue Start ---------------------------------");
+        /*
         List errorList =DataCompareUtil.compareNew(sourceUniqueDataSet,targetUniqueDataSet,mappingData,keyColumnMappingData);
         errorList.stream().forEach
                 (
@@ -52,11 +53,15 @@ public class ValidationUtil {
                             //logger.info("Target Issue:{}",pairItem.getValue1());
                         }
                 );
-        ExcelWriterUtil.writeDataMisMatchDetails("Data Mismatch ",errorList,"datamismatch-error-output.xlsx");
+
+         */
+        //ExcelWriterUtil.writeDataMisMatchDetails("Data Mismatch ",errorList,"datamismatch-error-output.xlsx");
         logger.error("-------------------------------------- Printing Data Mismatch Issue End ---------------------------------");
     }
-    public static void printDataDuplicationDetails()
-    {
-    }
 
+    public static void printAllErrorDetails(String dataMismatchSheetName, String dataDuplicateSheetName, Map<Integer, Map> duplicateDataSet,Map<Integer, Map> sourceUniqueDataSet,Map<Integer, Map> targetUniqueDataSet,Map<String,String> mappingData,Map<String,String> keyColumnMappingData,String outputFilePath)
+    {
+        List errorList =DataCompareUtil.compareNew(sourceUniqueDataSet,targetUniqueDataSet,mappingData,keyColumnMappingData);
+        ExcelWriterUtil.writeAllErrorDetails(dataMismatchSheetName,errorList,dataDuplicateSheetName,duplicateDataSet,outputFilePath);
+    }
 }
