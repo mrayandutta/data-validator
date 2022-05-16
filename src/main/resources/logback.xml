@@ -20,18 +20,22 @@
             <pattern>%d{yyyy-MM-dd'T'HH:mm:ss'Z'} - %m%n</pattern>
         </encoder>
     </appender>
-    <!--<appender name="ANALYTICS-FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/datavalidator-another.log</file>
-        <append>true</append>
-        <encoder>
-            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
-        </encoder>
-    </appender>-->
+    <!--
+    <appender name="CUSTOM-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/data-validator.%d{dd-MM-yyyy-HH-mm-ss}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
 
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+-->
     <root level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
-        <!--<appender-ref ref="ANALYTICS-FILE" />-->
+        <!--<appender-ref ref="CUSTOM-FILE" />-->
     </root>
 
 </configuration>
