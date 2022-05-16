@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,8 +42,9 @@ public class ExcelWriterUtil {
     }
 
     public static void writeDataMisMatchDetails(String sheetName, List<Pair> errorList,XSSFWorkbook workbook)  {
-        logger.info("errorList :{}",errorList);
+        //logger.info("errorList :{}",errorList);
         //XSSFWorkbook workbook = new XSSFWorkbook();
+        logger.error("------------------- Printing Data Mismatch Issue Start ------------------\n");
         XSSFSheet sheet = workbook.createSheet(sheetName);
         int rowCount = 0;
         Row headerRow = sheet.createRow(rowCount);
@@ -68,17 +70,21 @@ public class ExcelWriterUtil {
             List<String> sourceErrorColumnList = (List<String>) sourcePair.getValue1();
             Integer targetErrorRowNumber = (Integer) targetPair.getValue0();
             List<String> targetErrorColumnList = (List<String>) targetPair.getValue1();
+            String sourceErrorColumnListStr= String.join(",",sourceErrorColumnList);
+            String targetErrorColumnListStr= String.join(",",targetErrorColumnList);
+
+            logger.error("Source row number:{},Source Columns:{},Target Row Number:{},Target Columns:{}",sourceErrorRowNumber,sourceErrorColumnListStr,targetErrorRowNumber,targetErrorColumnListStr);
 
 
             Cell cell1 = row.createCell(columnCount++);
             cell1.setCellValue(sourceErrorRowNumber.toString());
             Cell cell2 = row.createCell(columnCount++);
-            cell2.setCellValue(String.join(",",sourceErrorColumnList));
+            cell2.setCellValue(sourceErrorColumnListStr);
 
             Cell cell3 = row.createCell(columnCount++);
             cell3.setCellValue(targetErrorRowNumber.toString());
             Cell cell4 = row.createCell(columnCount++);
-            cell4.setCellValue(String.join(",",targetErrorColumnList));
+            cell4.setCellValue(targetErrorColumnListStr);
         }
         /*
         try {
@@ -92,17 +98,20 @@ public class ExcelWriterUtil {
         }
 
          */
+        logger.error("\n \n --------------------- Printing Data Mismatch Issue End ------------\n");
     }
 
     public static void writeDataDuplicationDetails(String sheetName, Map<Integer, Map> duplicateDataSet,XSSFWorkbook workbook)  {
-        logger.info("duplicateDataSet :{}",duplicateDataSet);
+        //logger.info("duplicateDataSet :{}",duplicateDataSet);
         //XSSFWorkbook workbook = new XSSFWorkbook();
+
         XSSFSheet sheet = workbook.createSheet(sheetName);
         int rowCount = 0;
         Row headerRow = sheet.createRow(rowCount);
         Cell headerCell1 = headerRow.createCell(0);
         headerCell1.setCellValue(ApplicationConstants.DATA_DUPLICATION_SHEET_COLUMN_NAME);
         rowCount++;
+        List<String> rowNumberList = new ArrayList<>();
 
 
         for (Map.Entry me : duplicateDataSet.entrySet())
@@ -112,7 +121,15 @@ public class ExcelWriterUtil {
             Cell cell1 = row.createCell(0);
             Integer rowNumber = (Integer) me.getKey();
             cell1.setCellValue(rowNumber.toString());
+            rowNumberList.add(rowNumber.toString());
         }
+        if(!rowNumberList.isEmpty())
+        {
+            logger.error("--------------------- Printing Data Duplication Issue Start ------------\n");
+            logger.error("Following row numbers in source record have duplicates :{}",String.join(",",rowNumberList));
+            logger.error("\n \n --------------------- Printing Data Duplication Issue End ------------\n");
+        }
+
         /*
         try {
             FileOutputStream outputStream = new FileOutputStream(outputFilePath);

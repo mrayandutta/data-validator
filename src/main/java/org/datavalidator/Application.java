@@ -28,10 +28,10 @@ public class Application {
 
         Pair<Map<String,String>,Map<String,String>> mappingAndKeyColumnMappingPair = ValidationUtil.getMappingAndKeyColumnMappingPair(mappingInputFilePath,mappingInputSheetNumber);
         Map<String,String> mappingData = mappingAndKeyColumnMappingPair.getValue0();
-        logger.info("mappingData:{}",mappingData);
+        //logger.info("mappingData:{}",mappingData);
 
         Map<String,String> keyColumnMappingData = mappingAndKeyColumnMappingPair.getValue1();
-        logger.info("keyColumnMappingData:{}",keyColumnMappingData);
+        //logger.info("keyColumnMappingData:{}",keyColumnMappingData);
 
         Map<Integer, Map> sourceDataSet = ValidationUtil.getDataSetFromSheet(sourceInputFilePath,sourceInputSheetNumber);
         Map<Integer, Map> targetDataSet = ValidationUtil.getDataSetFromSheet(targetInputFilePath,targetInputSheetNumber);
@@ -39,17 +39,17 @@ public class Application {
         List<String> keyColumnListForSource = new ArrayList<String>();
         keyColumnListForSource.addAll(keyColumnMappingData.keySet());
         Map<Integer, Map> sourceDuplicateDataSet = DataCompareUtil.getDuplicateDataSet(sourceDataSet,keyColumnListForSource);
-        logger.info("sourceDuplicateDataSet:{}",sourceDuplicateDataSet);
+        //logger.info("sourceDuplicateDataSet:{}",sourceDuplicateDataSet);
         Map<Integer, Map> sourceUniqueDataSet = DataCompareUtil.getUniqueDataSet(sourceDataSet,sourceDuplicateDataSet);
-        logger.info("sourceUniqueDataSet:{}",sourceUniqueDataSet);
+        //logger.info("sourceUniqueDataSet:{}",sourceUniqueDataSet);
 
 
         List<String> keyColumnListForTarget = new ArrayList<String>();
         keyColumnListForTarget.addAll(keyColumnMappingData.values());
         Map<Integer, Map> targetDuplicateDataSet = DataCompareUtil.getDuplicateDataSet(targetDataSet,keyColumnListForTarget);
-        logger.info("targetDuplicateDataSet:{}",targetDuplicateDataSet);
+        //logger.info("targetDuplicateDataSet:{}",targetDuplicateDataSet);
         Map<Integer, Map> targetUniqueDataSet = DataCompareUtil.getUniqueDataSet(targetDataSet,targetDuplicateDataSet);
-        logger.info("targetUniqueDataSet:{}",targetUniqueDataSet);
+        //logger.info("targetUniqueDataSet:{}",targetUniqueDataSet);
 
         //ValidationUtil.printDataDuplicationDetails(sourceDuplicateDataSet,targetDuplicateDataSet);
         //ValidationUtil.printDataMisMatchDetails(sourceUniqueDataSet,targetUniqueDataSet,mappingData,keyColumnMappingData);
