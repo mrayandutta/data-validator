@@ -4,6 +4,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCreationHelper;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.datavalidator.constants.ApplicationConstants;
 import org.datavalidator.model.CellItem;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -100,7 +101,7 @@ public class ExcelWriterUtil {
         int rowCount = 0;
         Row headerRow = sheet.createRow(rowCount);
         Cell headerCell1 = headerRow.createCell(0);
-        headerCell1.setCellValue("Source Row Number ");
+        headerCell1.setCellValue(ApplicationConstants.DATA_DUPLICATION_SHEET_COLUMN_NAME);
         rowCount++;
 
 

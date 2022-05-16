@@ -1,40 +1,37 @@
 package org.datavalidator;
 
-import org.datavalidator.constants.ApplicationConstants;
-import org.datavalidator.util.DataCompareUtil;
-import org.datavalidator.util.ValidationUtil;
-import org.javatuples.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Application {
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.datavalidator.util.DataCompareUtil;
+import org.datavalidator.util.ExcelUtil;
+import org.datavalidator.util.ExcelWriterUtil;
+import org.datavalidator.util.ValidationUtil;
+import org.javatuples.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class ApplicationOld {
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     public static void main(String[] args) {
 
         //String inputFilePath = "./input-sample-100.xlsx";
-        String sourceInputFilePath = "./source-data-sample.xlsx";
-        String targetInputFilePath = "./target-data-sample.xlsx";
-        String mappingInputFilePath = "./mapping-data-sample.xlsx";
-        String outputFilePath = ApplicationConstants.REPORT_OUTPUT_FILE_LOCATION;
+        String inputFilePath = "./input-sample.xlsx";
+        String outputFilePath = "./output.xlsx";
 
-        int sourceInputSheetNumber = 1;
-        int targetInputSheetNumber = 2;
-        int mappingInputSheetNumber = 0;
-
-        Pair<Map<String,String>,Map<String,String>> mappingAndKeyColumnMappingPair = ValidationUtil.getMappingAndKeyColumnMappingPair(mappingInputFilePath,mappingInputSheetNumber);
+        Pair<Map<String,String>,Map<String,String>> mappingAndKeyColumnMappingPair = ValidationUtil.getMappingAndKeyColumnMappingPair(inputFilePath,0);
         Map<String,String> mappingData = mappingAndKeyColumnMappingPair.getValue0();
         logger.info("mappingData:{}",mappingData);
 
         Map<String,String> keyColumnMappingData = mappingAndKeyColumnMappingPair.getValue1();
         logger.info("keyColumnMappingData:{}",keyColumnMappingData);
 
-        Map<Integer, Map> sourceDataSet = ValidationUtil.getDataSetFromSheet(sourceInputFilePath,sourceInputSheetNumber);
-        Map<Integer, Map> targetDataSet = ValidationUtil.getDataSetFromSheet(targetInputFilePath,targetInputSheetNumber);
+        Map<Integer, Map> sourceDataSet = ValidationUtil.getDataSetFromSheet(inputFilePath,1);
+        Map<Integer, Map> targetDataSet = ValidationUtil.getDataSetFromSheet(inputFilePath,2);
 
         List<String> keyColumnListForSource = new ArrayList<String>();
         keyColumnListForSource.addAll(keyColumnMappingData.keySet());
@@ -55,7 +52,7 @@ public class Application {
         //ValidationUtil.printDataMisMatchDetails(sourceUniqueDataSet,targetUniqueDataSet,mappingData,keyColumnMappingData);
 
         //ExcelWriterUtil.writeAllErrorDetails(sourceDuplicateDataSet);
-        ValidationUtil.printAllErrorDetails(ApplicationConstants.DATA_MISMATCH_SHEET_NAME,ApplicationConstants.DATA_DUPLICATION_SHEET_NAME,sourceDuplicateDataSet,sourceUniqueDataSet,targetUniqueDataSet,mappingData,keyColumnMappingData,outputFilePath);
+        ValidationUtil.printAllErrorDetails("Data Mismatch","Data Duplication",sourceDuplicateDataSet,sourceUniqueDataSet,targetUniqueDataSet,mappingData,keyColumnMappingData,outputFilePath);
 
     }
 }
